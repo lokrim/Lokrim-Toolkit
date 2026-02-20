@@ -1,5 +1,6 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import DashboardLayout from "@/layouts/DashboardLayout";
+import Home from "@/pages/Home";
 import { toolsConfig } from "@/toolsConfig";
 
 function App() {
@@ -7,8 +8,8 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<DashboardLayout />}>
-          {/* Default redirect to the first tool */}
-          <Route index element={<Navigate to={toolsConfig[0].path} replace />} />
+          {/* Default to Home Dashboard */}
+          <Route index element={<Home />} />
 
           {/* Dynamically generate routes for each tool */}
           {toolsConfig.map((tool) => {

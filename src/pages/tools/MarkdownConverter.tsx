@@ -126,7 +126,11 @@ export default function MarkdownConverter() {
                         <Button
                             onClick={() => handleConvert()}
                             disabled={isConverting || !inputText.trim()}
-                            className="bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 px-6 font-medium hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors shadow-sm"
+                            style={{
+                                backgroundColor: (!isConverting && inputText.trim()) ? '#18181b' : undefined,
+                                color: (!isConverting && inputText.trim()) ? '#fafafa' : undefined
+                            }}
+                            className="dark:!bg-zinc-50 dark:!text-zinc-900 dark:hover:!bg-zinc-200 disabled:bg-zinc-100 disabled:text-zinc-400 dark:disabled:bg-zinc-800 dark:disabled:text-zinc-500 disabled:opacity-100 px-8 font-medium transition-all shadow-sm"
                         >
                             {isConverting && !outputText ? (
                                 <>
@@ -141,10 +145,10 @@ export default function MarkdownConverter() {
                 </div>
             </div>
 
-            <div className="flex-1 min-h-0 flex flex-col lg:flex-row gap-6 pt-2">
-                <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6 min-h-0">
+            <div className="flex-1 min-h-0 min-w-0 flex flex-col lg:flex-row gap-6 pt-2">
+                <div className="flex-1 min-w-0 grid grid-cols-1 md:grid-cols-2 gap-6 min-h-0">
                     {/* Left Area: Input */}
-                    <div className="flex flex-col min-h-0 border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden shadow-sm bg-white dark:bg-zinc-900/40 focus-within:ring-1 focus-within:ring-zinc-300 dark:focus-within:ring-zinc-700 transition-shadow">
+                    <div className="flex flex-col min-h-0 min-w-0 border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden shadow-sm bg-white dark:bg-zinc-900/40 focus-within:ring-1 focus-within:ring-zinc-300 dark:focus-within:ring-zinc-700 transition-shadow">
                         <div className="px-4 py-2.5 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/50 font-medium text-sm flex items-center justify-between text-zinc-700 dark:text-zinc-300">
                             Raw Article / Text
                         </div>
@@ -158,7 +162,7 @@ export default function MarkdownConverter() {
                     </div>
 
                     {/* Middle Area: Output */}
-                    <div className="flex flex-col min-h-0 border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden shadow-sm bg-white dark:bg-zinc-900/40">
+                    <div className="flex flex-col min-h-0 min-w-0 border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden shadow-sm bg-white dark:bg-zinc-900/40">
                         <div className="px-4 py-2.5 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/50 font-medium text-sm flex items-center justify-between text-zinc-700 dark:text-zinc-300">
                             <span>Obsidian Markdown</span>
                             <button

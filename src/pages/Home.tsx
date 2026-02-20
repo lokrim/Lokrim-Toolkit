@@ -1,0 +1,41 @@
+import { Wrench } from "lucide-react";
+
+export default function Home() {
+    return (
+        <div className="flex flex-col h-full p-8 max-w-4xl mx-auto space-y-8 text-zinc-900 dark:text-zinc-50 pt-12">
+            <div className="space-y-4">
+                <div className="flex items-center space-x-4 mb-8">
+                    <div className="bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 p-3 rounded-xl shadow-sm">
+                        <Wrench className="w-8 h-8" />
+                    </div>
+                    <h1 className="text-4xl font-bold tracking-tight">lokrim.toolkit</h1>
+                </div>
+                <p className="text-lg text-zinc-500 dark:text-zinc-400">
+                    A sleek, lightweight web application built for personal utility and knowledge management.
+                </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+                <div className="p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 shadow-sm flex flex-col space-y-3">
+                    <h2 className="text-xl font-semibold">Available Tools</h2>
+                    <p className="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed">
+                        <strong className="text-zinc-900 dark:text-zinc-100">Web to Obsidian Notes</strong><br />
+                        Paste whole web articles directly into the application. The tool automatically parses HTML, preserving all important hyperlinks and image references. It uses AI to intelligently strip noisy web boilerplate and structure the content into clean, standard Markdown suitable for your personal knowledge vault.
+                    </p>
+                </div>
+
+                <div className="p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 shadow-sm flex flex-col space-y-3">
+                    <h2 className="text-xl font-semibold">How to Use</h2>
+                    <p className="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed">
+                        <strong className="text-zinc-900 dark:text-zinc-100">Bring Your Own Key (BYOK)</strong><br />
+                        No backend user authentication is required. Click the <strong>Settings</strong> menu in the bottom-left sidebar to securely paste your own Google Gemini API Key. The key is stored safely in your browser's local storage and is never sent anywhere except directly to Google's API to ensure your quota remains private.
+                    </p>
+                </div>
+            </div>
+
+            <div className="pt-12 mt-auto border-t border-zinc-200 dark:border-zinc-800 text-sm text-zinc-500 dark:text-zinc-400">
+                Created by <strong className="text-zinc-900 dark:text-zinc-100">lokrim</strong>. Open-source personal utilities targeting minimal design & local privacy.
+            </div>
+        </div>
+    );
+}

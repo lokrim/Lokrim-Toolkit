@@ -23,10 +23,14 @@ dist-ssr
 firebase-debug.log*
 firestore-debug.log*
 ui-debug.log*
+.firebaserc
+firebase.json
 
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
+.gitignore
+.github
 .idea
 .DS_Store
 *.suo

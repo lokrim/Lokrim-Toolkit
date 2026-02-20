@@ -1,7 +1,7 @@
 
 import { Outlet, NavLink, useLocation } from "react-router-dom";
 import { toolsConfig } from "@/toolsConfig";
-import { Wrench } from "lucide-react";
+import { Wrench, Home as HomeIcon } from "lucide-react";
 import { Toaster } from "@/components/ui/sonner";
 import SettingsModal from "@/components/SettingsModal";
 
@@ -23,6 +23,26 @@ export default function DashboardLayout() {
                 {/* Navigation links */}
                 <div className="flex-1 overflow-auto py-4 px-3 space-y-1">
                     <div className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 mb-2 px-2 uppercase tracking-wider">
+                        Overview
+                    </div>
+
+                    <NavLink
+                        to="/"
+                        end
+                        className={({ isActive }) => `flex items-center space-x-3 px-2.5 py-2 rounded-md text-sm transition-colors ${isActive
+                                ? "bg-zinc-200/50 dark:bg-zinc-800/50 text-zinc-900 dark:text-zinc-50 font-medium"
+                                : "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-100"
+                            }`}
+                    >
+                        {({ isActive }) => (
+                            <>
+                                <HomeIcon className={`w-4 h-4 ${isActive ? "" : "opacity-70"}`} />
+                                <span>Dashboard</span>
+                            </>
+                        )}
+                    </NavLink>
+
+                    <div className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 mt-6 mb-2 px-2 uppercase tracking-wider">
                         Tools
                     </div>
                     {toolsConfig.map((tool) => {
