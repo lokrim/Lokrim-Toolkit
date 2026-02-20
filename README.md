@@ -15,11 +15,27 @@ A powerful tool designed specifically for knowledge hoarders and Obsidian users.
 No backend user authentication is required to manage API credits. 
 Click the **Settings** menu in the bottom-left sidebar to securely paste your own Google Gemini API Key. The key is stored safely in your browser's `localStorage` and is never sent anywhere except directly to Google's API.
 
-## Requirements
-- Node.js & npm
-- A [Google AI Studio](https://aistudio.google.com/) API Key for Gemini.
+---
 
-## Installation & Setup
+## 🚀 Live Demo & Usage
+
+**The application is live and completely free to use!** 
+Try it here: [https://lokrim-toolkit.web.app](https://lokrim-toolkit.web.app)
+
+### How to use the Web to Obsidian Converter:
+1. Navigate to the live link above and click **Settings** (bottom left).
+2. Paste your own free **Gemini API Key** (from [Google AI Studio](https://aistudio.google.com/)). This key is securely stored in your browser's local storage and is never saved to any outer server.
+3. Click on the **Web to Obsidian** tool.
+4. Go to any messy, ad-filled web article and copy exactly what you want (e.g. `Cmd+A` -> `Cmd+C`).
+5. Paste it into the "Raw Article / Text" box. The tool automatically detects Rich-Text HTML and prepares the links and images. 
+6. Click **Structure for Obsidian** and let AI convert it into a perfectly formatted, hierarchical Markdown note.
+7. Click **Copy** and paste it directly into your Obsidian Vault!
+
+---
+
+## Developer Installation & Setup
+
+Want to run it locally or contribute?
 
 1. **Clone the repository and install dependencies:**
 ```bash
@@ -31,32 +47,18 @@ You can provide a default fallback API key in a `.env` file at the root of the p
 ```env
 VITE_GEMINI_API_KEY="your_api_key_here"
 ```
-*(Note: Keys entered via the UI Settings modal take priority over the `.env` variable).*
 
 3. **Run the development server:**
 ```bash
 npm run dev
 ```
-The app will be available at `http://localhost:5173`.
 
-## Deployment (Firebase)
+## Deployment (Firebase CI/CD)
 
-The project is fully configured as a Single Page Application (SPA) for Firebase Hosting.
+The project is fully configured as a Single Page Application (SPA) for Firebase Hosting with GitHub Actions.
 
-1. Login to Firebase CLI:
-```bash
-npx firebase login
-```
-
-2. Build the production application:
-```bash
-npm run build
-```
-
-3. Deploy using the included `firebase.json` configuration:
-```bash
-npx firebase deploy
-```
+- Any push to the `main` branch automatically triggers the `.github/workflows/firebase-hosting-merge.yml` action.
+- This action installs dependencies, builds the Vite production bundle, and securely deploys the updated `dist` folder to Firebase Hosting.
 
 ## Tech Stack
 - **Framework**: React + Vite + TypeScript
