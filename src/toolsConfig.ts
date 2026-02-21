@@ -1,6 +1,7 @@
-import { FileText, Bot } from "lucide-react";
+import { FileText, Bot, FileJson2 } from "lucide-react";
 import MarkdownConverter from "@/pages/tools/MarkdownConverter";
 import PromptGenerator from "@/pages/tools/PromptGenerator";
+import PdfPipeline from "@/pages/tools/PdfPipeline";
 
 /**
  * Core Configuration for lokrim.toolkit
@@ -40,5 +41,13 @@ export const toolsConfig: ToolConfig[] = [
         icon: Bot,
         component: PromptGenerator,
         description: "Transform rough ideas into highly optimized, professional prompts for AI models.",
+    },
+    {
+        id: "pdf-pipeline",
+        name: "Universal PDF Pipeline",
+        path: "/tools/pdf-pipeline",
+        icon: FileJson2,
+        component: PdfPipeline,
+        description: "Drag and drop images, PDFs, and Office docs to merge, order, and convert them into a single PDF.",
     }
 ];

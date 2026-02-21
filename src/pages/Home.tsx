@@ -32,6 +32,13 @@ export default function Home() {
                             Transform rough, informal ideas into highly detailed, professional master prompts. Configure your target persona and desired output format, and let AI engineer the perfect prompt system instruction for you.
                         </p>
                     </div>
+
+                    <div className="space-y-1">
+                        <strong className="text-zinc-900 dark:text-zinc-100 text-sm">Universal PDF Pipeline</strong>
+                        <p className="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed">
+                            Merge diverse file formats (PDFs, Images, Office Docs, Text) into a single, perfectly ordered PDF document. Utilizes intelligent local browser processing for maximum privacy and speed.
+                        </p>
+                    </div>
                 </div>
 
                 <div className="p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 shadow-sm flex flex-col space-y-3">

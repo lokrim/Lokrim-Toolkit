@@ -16,9 +16,15 @@ Transform a brief, rough idea into a highly engineered, professional AI system i
 - **Dynamic Personas**: Select from specialized roles like Senior Full-Stack Developer, Copywriter, or UI/UX Designer to frame the AI's perspective.
 - **Structured Output**: Forces the Gemini model to output a strict 4-part prompt detailing Role & Context, The Task, Constraints & Guidelines, and Expected Output Format.
 
-### 🔑 Bring Your Own Key (BYOK)
-No backend user authentication is required to manage API credits. 
-Click the **Settings** menu in the bottom-left sidebar to securely paste your own Google Gemini API Key. The key is stored safely in your browser's `localStorage` and is never sent anywhere except directly to Google's API.
+### 📄 Universal PDF Pipeline
+Merge diverse file formats into a single, perfectly ordered PDF document.
+- **Hybrid Processing**: Intelligently processes Native PDFs and Images (`.png`, `.jpg`) completely locally in your browser using `pdf-lib` for zero network overhead.
+- **Office Document Support**: Securely routes Word (`.docx`), Excel (`.xlsx`), PowerPoint (`.pptx`), and Text (`.txt`) files through ConvertAPI for pristine PDF rendering before merging.
+- **Drag & Drop Reordering**: Fluidly sort your pipeline array using a modern drag-and-drop interface powered by `@hello-pangea/dnd`.
+
+### 🔑 Bring Your Own Key (BYOK) Architecture
+No backend user authentication is required to manage API credits or subscriptions. 
+Click the **Settings** menu in the bottom-left sidebar to securely paste your own **Google Gemini API Key** and **ConvertAPI Secret**. These keys are stored safely in your browser's `localStorage` and are never sent anywhere except directly to their respective providers.
 
 ---
 
@@ -68,9 +74,10 @@ npm install
 ```
 
 2. **Environment Variables (Optional):**
-You can provide a default fallback API key in a `.env` file at the root of the project:
+You can provide default fallback API keys in a `.env` file at the root of the project:
 ```env
-VITE_GEMINI_API_KEY="your_api_key_here"
+VITE_GEMINI_API_KEY="your_gemini_key_here"
+VITE_CONVERT_API_KEY="your_convertapi_secret_here"
 ```
 
 3. **Run the development server:**
@@ -89,8 +96,8 @@ The project is fully configured as a Single Page Application (SPA) for Firebase 
 - **Framework**: React + Vite + TypeScript
 - **Styling**: Tailwind CSS v4
 - **Components**: `shadcn/ui` (Radix UI) + Lucide React icons
-- **AI**: `@google/generative-ai` SDK
-- **Utilities**: `turndown` for HTML-to-Markdown parsing, `react-router-dom` for navigation, `sonner` for toast notifications.
+- **AI / Conversion**: `@google/generative-ai` SDK, `pdf-lib`
+- **Utilities**: `turndown` for HTML parsing, `react-router-dom` for navigation, `sonner` for local toasts, `@hello-pangea/dnd` & `react-dropzone` for array management.
 
 ## License
 MIT
