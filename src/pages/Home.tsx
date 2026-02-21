@@ -16,12 +16,22 @@ export default function Home() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-                <div className="p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 shadow-sm flex flex-col space-y-3">
+                <div className="p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 shadow-sm flex flex-col space-y-4">
                     <h2 className="text-xl font-semibold">Available Tools</h2>
-                    <p className="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed">
-                        <strong className="text-zinc-900 dark:text-zinc-100">Web to Obsidian Notes</strong><br />
-                        Paste whole web articles directly into the application. The tool automatically parses HTML, preserving all important hyperlinks and image references. It uses AI to intelligently strip noisy web boilerplate and structure the content into clean, standard Markdown suitable for your personal knowledge vault.
-                    </p>
+
+                    <div className="space-y-1">
+                        <strong className="text-zinc-900 dark:text-zinc-100 text-sm">Web to Obsidian Notes</strong>
+                        <p className="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed">
+                            Paste whole web articles directly into the application. The tool automatically parses HTML, preserving all important hyperlinks and image references. It uses AI to intelligently strip noisy web boilerplate and structure the content into clean, standard Markdown.
+                        </p>
+                    </div>
+
+                    <div className="space-y-1">
+                        <strong className="text-zinc-900 dark:text-zinc-100 text-sm">Prompt Generator</strong>
+                        <p className="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed">
+                            Transform rough, informal ideas into highly detailed, professional master prompts. Configure your target persona and desired output format, and let AI engineer the perfect prompt system instruction for you.
+                        </p>
+                    </div>
                 </div>
 
                 <div className="p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 shadow-sm flex flex-col space-y-3">

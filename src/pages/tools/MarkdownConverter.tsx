@@ -102,7 +102,7 @@ export default function MarkdownConverter() {
     };
 
     return (
-        <div className="flex flex-col h-full p-6 max-w-[1600px] mx-auto space-y-4">
+        <div className="flex flex-col h-full w-full p-6 space-y-4">
             <div className="flex flex-col space-y-1.5 pb-2 border-b border-zinc-200 dark:border-zinc-800">
                 <div className="flex items-center justify-between">
                     <div>
@@ -126,11 +126,7 @@ export default function MarkdownConverter() {
                         <Button
                             onClick={() => handleConvert()}
                             disabled={isConverting || !inputText.trim()}
-                            style={{
-                                backgroundColor: (!isConverting && inputText.trim()) ? '#18181b' : undefined,
-                                color: (!isConverting && inputText.trim()) ? '#fafafa' : undefined
-                            }}
-                            className="dark:!bg-zinc-50 dark:!text-zinc-900 dark:hover:!bg-zinc-200 disabled:bg-zinc-100 disabled:text-zinc-400 dark:disabled:bg-zinc-800 dark:disabled:text-zinc-500 disabled:opacity-100 px-8 font-medium transition-all shadow-sm"
+                            className="bg-zinc-900 text-zinc-50 hover:bg-zinc-900/90 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200 disabled:bg-zinc-100 disabled:text-zinc-400 dark:disabled:bg-zinc-800 dark:disabled:text-zinc-500 disabled:opacity-100 px-8 font-medium transition-all shadow-sm"
                         >
                             {isConverting && !outputText ? (
                                 <>
@@ -183,8 +179,8 @@ export default function MarkdownConverter() {
                 </div>
 
                 {/* Right Area: History Sidebar */}
-                <div className="w-full lg:w-72 xl:w-80 flex flex-col min-h-0 border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden shadow-sm bg-zinc-50/50 dark:bg-zinc-900/20">
-                    <div className="px-4 py-2.5 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-100/50 dark:bg-zinc-950/50 font-medium text-sm flex items-center space-x-2 text-zinc-700 dark:text-zinc-300">
+                <div className="w-full lg:w-72 xl:w-80 flex flex-col min-h-0 border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden shadow-sm bg-white dark:bg-zinc-900/40">
+                    <div className="px-4 py-2.5 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/50 font-medium text-sm flex items-center space-x-2 text-zinc-700 dark:text-zinc-300">
                         <Clock className="w-4 h-4" />
                         <span>Recent Conversions</span>
                     </div>
@@ -198,7 +194,7 @@ export default function MarkdownConverter() {
                                 <button
                                     key={item.id}
                                     onClick={() => loadHistoryItem(item)}
-                                    className="w-full text-left p-3 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 hover:border-zinc-300 dark:hover:border-zinc-700 hover:shadow-sm transition-all group"
+                                    className="w-full text-left p-3 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-950/50 hover:bg-zinc-100 dark:hover:bg-zinc-800 focus:outline-none focus:ring-1 focus:ring-zinc-300 dark:focus:ring-zinc-700 transition-all group"
                                 >
                                     <div className="flex items-center justify-between mb-1.5">
                                         <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
