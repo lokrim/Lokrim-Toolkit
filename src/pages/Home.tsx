@@ -44,7 +44,7 @@ export default function Home() {
             </div>
 
             <div className="pt-12 mt-auto border-t border-zinc-200 dark:border-zinc-800 text-sm text-zinc-500 dark:text-zinc-400">
-                Created by <strong className="text-zinc-900 dark:text-zinc-100">lokrim</strong>. Open-source personal utilities targeting minimal design & local privacy.
+                Created by <a href="https://github.com/lokrim" target="_blank" rel="noopener noreferrer" className="text-zinc-900 dark:text-zinc-100 font-semibold hover:underline">lokrim</a>. Open-source personal utilities targeting minimal design & local privacy.
             </div>
         </div>
     );

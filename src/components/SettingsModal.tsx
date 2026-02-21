@@ -35,9 +35,9 @@ export default function SettingsModal() {
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
-                <button className="flex items-center space-x-2 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
-                    <Settings className="w-4 h-4" />
-                    <span className="text-sm font-medium">Settings</span>
+                <button className="flex items-center space-x-3 w-full px-2.5 py-2 rounded-md text-sm transition-colors text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-100">
+                    <Settings className="w-4 h-4 opacity-70" />
+                    <span>Settings</span>
                 </button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">

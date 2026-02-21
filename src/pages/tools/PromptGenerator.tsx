@@ -13,6 +13,16 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 
+/**
+ * Master Prompt Generator Tool
+ * 
+ * Takes a rough idea and wraps it in a complex system instruction via the Gemini API
+ * to engineer a highly professional, 4-step AI prompt for future use.
+ * 
+ * Architecture Note:
+ * Built using shadcn/ui Select dropdowns for dynamic parameterization.
+ * Relies on the shared BYOK (Bring Your Own Key) structure in `gemini.ts`.
+ */
 export default function PromptGenerator() {
     const [persona, setPersona] = useState<string>("");
     const [format, setFormat] = useState<string>("");
@@ -130,7 +140,7 @@ export default function PromptGenerator() {
                     <Button
                         onClick={handleGenerate}
                         disabled={isGenerating || !roughIdea.trim() || !persona || !format}
-                        className="w-full h-12 bg-zinc-900 text-zinc-50 hover:bg-zinc-900/90 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200 disabled:bg-zinc-100 disabled:text-zinc-400 dark:disabled:bg-zinc-800 dark:disabled:text-zinc-500 disabled:opacity-100 font-medium transition-all shadow-sm rounded-xl"
+                        className="w-full h-12 bg-zinc-900 text-zinc-50 hover:bg-zinc-900/90 dark:bg-purple-600 dark:text-zinc-50 dark:hover:bg-purple-500 disabled:bg-zinc-100 disabled:text-zinc-400 dark:disabled:bg-zinc-800 dark:disabled:text-zinc-500 disabled:opacity-100 font-medium transition-all shadow-sm rounded-xl"
                     >
                         {isGenerating && !outputPrompt ? (
                             <>

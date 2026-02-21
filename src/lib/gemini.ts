@@ -2,6 +2,14 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const ENV_API_KEY = import.meta.env.VITE_GEMINI_API_KEY || "";
 
+/**
+ * Retrieves the active Gemini API key.
+ * 
+ * Scalability/Auth Strategy:
+ * Prioritizes a user-provided, locally stored key ("Bring Your Own Key") to 
+ * ensure the deployed app does not exhaust a single host API quota. 
+ * Falls back to the environment variable for local development if no local key exists.
+ */
 function getActiveApiKey(): string {
     let customKey = "";
     try {

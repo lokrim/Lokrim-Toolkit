@@ -11,6 +11,11 @@ A powerful tool designed specifically for knowledge hoarders and Obsidian users.
 - **Local History**: Your last 3 conversions are stored securely in your browser's local storage so you can easily restore past notes.
 - **Regenerate Prompt**: Easily retry the AI generation with a single click if the structure isn't perfect.
 
+### 🤖 Master Prompt Generator
+Transform a brief, rough idea into a highly engineered, professional AI system instruction.
+- **Dynamic Personas**: Select from specialized roles like Senior Full-Stack Developer, Copywriter, or UI/UX Designer to frame the AI's perspective.
+- **Structured Output**: Forces the Gemini model to output a strict 4-part prompt detailing Role & Context, The Task, Constraints & Guidelines, and Expected Output Format.
+
 ### 🔑 Bring Your Own Key (BYOK)
 No backend user authentication is required to manage API credits. 
 Click the **Settings** menu in the bottom-left sidebar to securely paste your own Google Gemini API Key. The key is stored safely in your browser's `localStorage` and is never sent anywhere except directly to Google's API.
@@ -30,6 +35,26 @@ Try it here: [https://lokrim-toolkit.web.app](https://lokrim-toolkit.web.app)
 5. Paste it into the "Raw Article / Text" box. The tool automatically detects Rich-Text HTML and prepares the links and images. 
 6. Click **Structure for Obsidian** and let AI convert it into a perfectly formatted, hierarchical Markdown note.
 7. Click **Copy** and paste it directly into your Obsidian Vault!
+
+---
+
+## 🛠 Developer Guide: Scalability & Theming
+
+The application is built to be easily expanded with new minimal tools while maintaining a strict consistency in design.
+
+### Adding a New Tool
+We use a scalable routing and sidebar architecture driven by a single config file (`src/toolsConfig.ts`). You do not need to manually touch `App.tsx` routing or `DashboardLayout.tsx` sidebars to add a layout.
+
+1. Build your new React component tool inside `src/pages/tools/YourTool.tsx`.
+2. Open `src/toolsConfig.ts`.
+3. Import your component and a Lucide icon.
+4. Add a new object to the `toolsConfig` array. The app will automatically generate the route, the sidebar link, and the dashboard tile!
+
+### Theme Rules for Consistency
+To maintain the premium dark/light mode experience:
+- **Rule 1**: NEVER write raw CSS rules for elements (e.g. `button {}`) in `index.css`. This breaks Tailwind's class application.
+- **Rule 2**: NEVER use inline react `<div style={{ backgroundColor: 'white' }}>` overrides. 
+- **Rule 3**: ALWAYS rely purely on Tailwind's `dark:` variant classes directly on your elements (e.g. `className="bg-zinc-50 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-50"`). This guarantees your new tool will natively support the global theme toggle.
 
 ---
 

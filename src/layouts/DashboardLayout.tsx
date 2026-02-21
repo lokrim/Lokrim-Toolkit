@@ -5,13 +5,23 @@ import { Toaster } from "@/components/ui/sonner";
 import SettingsModal from "@/components/SettingsModal";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
+/**
+ * Main Application Shell
+ * 
+ * Provides the core layout structure: a responsive left sidebar for navigation
+ * and a main content area for the currently active tool instance.
+ * 
+ * Scalability Note: The sidebar navigation links are NOT hardcoded. They are
+ * dynamically mapped from `src/toolsConfig.ts`. Adding a new tool there will
+ * automatically populate a new navigation link here.
+ */
 export default function DashboardLayout() {
     const location = useLocation();
 
     return (
         <div className="flex h-screen w-full bg-white dark:bg-zinc-950 font-sans text-zinc-900 dark:text-zinc-50 overflow-hidden">
             {/* Sidebar */}
-            <aside className="w-64 border-r border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50 flex flex-col hidden md:flex">
+            <aside className="w-64 border-r border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50 hidden md:flex flex-col">
                 {/* Logo area */}
                 <div className="h-14 border-b border-zinc-200 dark:border-zinc-800 flex items-center px-4 font-semibold text-sm tracking-tight space-x-2">
                     <div className="bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 p-1.5 rounded-md">

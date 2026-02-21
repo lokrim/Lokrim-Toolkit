@@ -1,6 +1,16 @@
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "@/components/ThemeProvider";
 
+/**
+ * Global Theme Toggle
+ * 
+ * Important Developer Rule for Scalability & Consistency:
+ * Do NOT use overriding CSS styles (e.g., in index.css) for components like buttons.
+ * Do NOT use inline React `style={{}}` tags for dynamic theming unless absolutely necessary.
+ * 
+ * ONLY use Tailwind's raw `.dark` variants (e.g., `dark:bg-zinc-900`) directly on elements.
+ * This guarantees that as the UI expands, the components natively subscribe to this toggle.
+ */
 export function ThemeToggle() {
     const { theme, setTheme } = useTheme();
 

@@ -14,6 +14,17 @@ interface HistoryItem {
     date: number;
 }
 
+/**
+ * Markdown Converter Tool
+ * 
+ * Takes raw clipboard text (specifically preserving HTML formatting like bolding, links,
+ * and images via TurndownService) and passes it to the Gemini API to format into
+ * clean headers and bullet points optimized for Obsidian note-taking.
+ * 
+ * Architecture Note:
+ * Uses `useLocalStorage` to persist the immediate last 3 conversion results locally
+ * in the right-hand sidebar, avoiding database dependencies.
+ */
 export default function MarkdownConverter() {
     const [inputText, setInputText] = useState("");
     const [outputText, setOutputText] = useState("");
@@ -126,7 +137,7 @@ export default function MarkdownConverter() {
                         <Button
                             onClick={() => handleConvert()}
                             disabled={isConverting || !inputText.trim()}
-                            className="bg-zinc-900 text-zinc-50 hover:bg-zinc-900/90 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200 disabled:bg-zinc-100 disabled:text-zinc-400 dark:disabled:bg-zinc-800 dark:disabled:text-zinc-500 disabled:opacity-100 px-8 font-medium transition-all shadow-sm"
+                            className="bg-zinc-900 text-zinc-50 hover:bg-zinc-900/90 dark:bg-purple-600 dark:text-zinc-50 dark:hover:bg-purple-500 disabled:bg-zinc-100 disabled:text-zinc-400 dark:disabled:bg-zinc-800 dark:disabled:text-zinc-500 disabled:opacity-100 px-8 font-medium transition-all shadow-sm"
                         >
                             {isConverting && !outputText ? (
                                 <>
