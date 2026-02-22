@@ -149,7 +149,11 @@ export async function processPdfPipeline(
     compressOutput: boolean,
     onProgress: (fileId: string, status: PipelineFile['status'], error?: string, uploadProgress?: number) => void
 ): Promise<Uint8Array> {
-    const activeKey = getActiveConvertApiKey();
+    const needsApi = compressOutput || files.some(f => {
+        const ext = f.file.name.split('.').pop()?.toLowerCase() || '';
+        return ['docx', 'xlsx', 'pptx', 'txt'].includes(ext);
+    });
+    const activeKey = needsApi ? getActiveConvertApiKey() : "";
     const mergedPdf = await PDFDocument.create();
 
     for (const pipelineFile of files) {
