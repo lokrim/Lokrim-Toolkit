@@ -16,28 +16,37 @@ export default function Home() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-                <div className="p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 shadow-sm flex flex-col space-y-4">
-                    <h2 className="text-xl font-semibold">Available Tools</h2>
+                <div className="p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 shadow-sm flex flex-col h-[450px]">
+                    <h2 className="text-xl font-semibold mb-4 shrink-0">Available Tools</h2>
 
-                    <div className="space-y-1">
-                        <strong className="text-zinc-900 dark:text-zinc-100 text-sm">Web to Obsidian Notes</strong>
-                        <p className="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed">
-                            Paste whole web articles directly into the application. The tool automatically parses HTML, preserving all important hyperlinks and image references. It uses AI to intelligently strip noisy web boilerplate and structure the content into clean, standard Markdown.
-                        </p>
-                    </div>
+                    <div className="flex flex-col space-y-5 overflow-y-auto pr-2 pb-2 min-h-0">
+                        <div className="space-y-1">
+                            <strong className="text-zinc-900 dark:text-zinc-100 text-sm">Web to Obsidian Notes</strong>
+                            <p className="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed">
+                                Paste whole web articles directly into the application. The tool automatically parses HTML, preserving all important hyperlinks and image references. It uses AI to intelligently strip noisy web boilerplate and structure the content into clean, standard Markdown.
+                            </p>
+                        </div>
 
-                    <div className="space-y-1">
-                        <strong className="text-zinc-900 dark:text-zinc-100 text-sm">Prompt Generator</strong>
-                        <p className="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed">
-                            Transform rough, informal ideas into highly detailed, professional master prompts. Configure your target persona and desired output format, and let AI engineer the perfect prompt system instruction for you.
-                        </p>
-                    </div>
+                        <div className="space-y-1">
+                            <strong className="text-zinc-900 dark:text-zinc-100 text-sm">Prompt Generator</strong>
+                            <p className="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed">
+                                Transform rough, informal ideas into highly detailed, professional master prompts. Configure your target persona and desired output format, and let AI engineer the perfect prompt system instruction for you.
+                            </p>
+                        </div>
 
-                    <div className="space-y-1">
-                        <strong className="text-zinc-900 dark:text-zinc-100 text-sm">Universal PDF Pipeline</strong>
-                        <p className="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed">
-                            Merge diverse file formats (PDFs, Images, Office Docs, Text) into a single, perfectly ordered PDF document. Utilizes intelligent local browser processing for maximum privacy and speed.
-                        </p>
+                        <div className="space-y-1">
+                            <strong className="text-zinc-900 dark:text-zinc-100 text-sm">Universal PDF Pipeline</strong>
+                            <p className="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed">
+                                Merge diverse file formats (PDFs, Images, Office Docs, Text) into a single, perfectly ordered PDF document. Utilizes intelligent local browser processing for maximum privacy and speed.
+                            </p>
+                        </div>
+
+                        <div className="space-y-1">
+                            <strong className="text-zinc-900 dark:text-zinc-100 text-sm">GeoJSON Validator & Mapper</strong>
+                            <p className="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed">
+                                Paste or drag-and-drop GeoJSON data to instantly view and validate it on an interactive map. Features live syntax checking, right-click coordinate extraction, and seamless TileLayer swapping.
+                            </p>
+                        </div>
                     </div>
                 </div>
 

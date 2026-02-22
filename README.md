@@ -22,6 +22,12 @@ Merge diverse file formats into a single, perfectly ordered PDF document.
 - **Office Document Support**: Securely routes Word (`.docx`), Excel (`.xlsx`), PowerPoint (`.pptx`), and Text (`.txt`) files through ConvertAPI for pristine PDF rendering before merging.
 - **Drag & Drop Reordering**: Fluidly sort your pipeline array using a modern drag-and-drop interface powered by `@hello-pangea/dnd`.
 
+### 🗺️ GeoJSON Validator & Quick Mapper
+Instantly visualize, validate, and extract coordinates from GeoJSON data.
+- **Live Parsing & Validation**: Paste or drag-and-drop your `.json` files. The built-in editor validates syntax on the fly and provides precise error badges if your JSON is uniquely malformed.
+- **Interactive Mapping**: Automatically fits the map to your valid geometry bounds. Choose between OSM Standard, CartoDB Positron, or CartoDB Dark Matter tile layers—all strictly adhering to the global dark mode toggle.
+- **Right-Click Extraction**: Right-click anywhere on the map to spawn a secure copying popup that extracts the exact `lat, long` coordinates directly to your clipboard.
+
 ### 🔑 Bring Your Own Key (BYOK) Architecture
 No backend user authentication is required to manage API credits or subscriptions. 
 Click the **Settings** menu in the bottom-left sidebar to securely paste your own **Google Gemini API Key** and **ConvertAPI Secret**. These keys are stored safely in your browser's `localStorage` and are never sent anywhere except directly to their respective providers.
@@ -51,10 +57,13 @@ The application is built to be easily expanded with new minimal tools while main
 ### Adding a New Tool
 We use a scalable routing and sidebar architecture driven by a single config file (`src/toolsConfig.ts`). You do not need to manually touch `App.tsx` routing or `DashboardLayout.tsx` sidebars to add a layout.
 
-1. Build your new React component tool inside `src/pages/tools/YourTool.tsx`.
-2. Open `src/toolsConfig.ts`.
-3. Import your component and a Lucide icon.
-4. Add a new object to the `toolsConfig` array. The app will automatically generate the route, the sidebar link, and the dashboard tile!
+1. **Build Component**: Create your new React component tool inside `src/pages/tools/YourTool.tsx`.
+2. **Register Tool**: Open `src/toolsConfig.ts`, import your component and a Lucide icon, and add a new object to the `toolsConfig` array. The app automatically generates the route and the sidebar link!
+3. **Update Dashboard**: Open `src/pages/Home.tsx` and add a new description block for your tool within the scrollable "Available Tools" grid section so users know what it does.
+4. **Update Documentation**: Always update this `README.md` file to reflect the new feature in the main `Features` list.
+
+### Architecture & Privacy Rules
+- **Bring Your Own Key (BYOK)**: If your new tool requires external APIs, do NOT hardcode API keys or require a backend user-authentication system. Instead, add a new input to the `SettingsModal.tsx` and securely persist the user's private key into their browser's `localStorage` (just like the existing Gemini and ConvertAPI implementations). This guarantees the user's API quota remains private and the application can remain a statically hosted SPA.
 
 ### Theme Rules for Consistency
 To maintain the premium dark/light mode experience:
