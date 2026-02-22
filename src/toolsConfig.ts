@@ -53,7 +53,7 @@ export const toolsConfig: ToolConfig[] = [
     },
     {
         id: "geojson-viewer",
-        name: "GeoJSON Validator & Quick Mapper",
+        name: "GeoJSON Quick Mapper",
         path: "/tools/geojson-viewer",
         icon: Map,
         component: GeoJsonViewer,
