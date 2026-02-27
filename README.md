@@ -11,10 +11,11 @@ A powerful tool designed specifically for knowledge hoarders and Obsidian users.
 - **Local History**: Your last 3 conversions are stored securely in your browser's local storage so you can easily restore past notes.
 - **Regenerate Prompt**: Easily retry the AI generation with a single click if the structure isn't perfect.
 
-### 🤖 Master Prompt Generator
-Transform a brief, rough idea into a highly engineered, professional AI system instruction.
-- **Dynamic Personas**: Select from specialized roles like Senior Full-Stack Developer, Copywriter, or UI/UX Designer to frame the AI's perspective.
-- **Structured Output**: Forces the Gemini model to output a strict 4-part prompt detailing Role & Context, The Task, Constraints & Guidelines, and Expected Output Format.
+### 🧠 Master Prompt Generator
+Transform rough, informal ideas into highly detailed, professional AI prompts.
+- **Dynamic Configuration**: Provide a target persona (e.g. *Senior Auth Engineer*) and an optional specialized field (e.g. *Cybersecurity*) to perfectly contextualize the LLM.
+- **AI-Engineered Generation**: Takes your raw bullet points/idea and expands them into a clean, strictly formatted Markdown prompt that automatically establishes role, context, task requirements, and constraints.
+- **Frictionless Workflow**: One-click copy directly to your clipboard, formatted strictly as raw text to prevent nested markdown codeblock errors when pasting into other LLMs.
 
 ### 📄 Universal PDF Pipeline
 Merge diverse file formats into a single, perfectly ordered PDF document.

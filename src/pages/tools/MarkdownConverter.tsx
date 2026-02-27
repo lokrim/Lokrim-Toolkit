@@ -80,8 +80,9 @@ export default function MarkdownConverter() {
             };
 
             setHistory(prev => {
-                const newHistory = [newItem, ...prev.filter(item => item.raw !== inputText)];
-                return newHistory.slice(0, 3);
+                const safeHistory = Array.isArray(prev) ? prev : [];
+                const newHistory = [newItem, ...safeHistory.filter(item => item.raw !== inputText)];
+                return newHistory.slice(0, 30);
             });
 
         } catch (error: any) {
@@ -198,7 +199,7 @@ export default function MarkdownConverter() {
                     <div className="flex-1 overflow-auto p-3 space-y-2">
                         {history.length === 0 ? (
                             <div className="text-xs text-zinc-500 dark:text-zinc-400 text-center py-8">
-                                Your last 3 conversions will appear here.
+                                Your recent conversions will appear here.
                             </div>
                         ) : (
                             history.map((item) => (

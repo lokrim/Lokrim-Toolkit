@@ -5,13 +5,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 
 /**
  * Master Prompt Generator Tool
@@ -25,19 +19,15 @@ import {
  */
 export default function PromptGenerator() {
     const [persona, setPersona] = useState<string>("");
-    const [format, setFormat] = useState<string>("");
+    const [specializedField, setSpecializedField] = useState<string>("");
     const [roughIdea, setRoughIdea] = useState("");
     const [outputPrompt, setOutputPrompt] = useState("");
     const [isGenerating, setIsGenerating] = useState(false);
     const [isCopied, setIsCopied] = useState(false);
 
     const handleGenerate = async () => {
-        if (!persona) {
-            toast.error("Please select a Target Persona.");
-            return;
-        }
-        if (!format) {
-            toast.error("Please select a Desired Output Format.");
+        if (!persona.trim()) {
+            toast.error("Please enter a Target Persona.");
             return;
         }
         if (!roughIdea.trim()) {
@@ -47,7 +37,7 @@ export default function PromptGenerator() {
 
         setIsGenerating(true);
         try {
-            const result = await generateExpertPrompt(persona, format, roughIdea);
+            const result = await generateExpertPrompt(persona, specializedField, roughIdea);
             setOutputPrompt(result);
             toast.success("Master prompt generated successfully!");
         } catch (error: any) {
@@ -90,38 +80,22 @@ export default function PromptGenerator() {
                 <div className="w-full lg:w-1/2 flex flex-col min-h-0 min-w-0 space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-1.5">
-                            <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Target Persona</label>
-                            <Select value={persona} onValueChange={setPersona}>
-                                <SelectTrigger className="w-full bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 focus:ring-1 focus:ring-zinc-300 dark:focus:ring-zinc-700 h-10">
-                                    <SelectValue placeholder="Select Persona" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="Expert">Skip Persona (Default Expert)</SelectItem>
-                                    <SelectItem value="Senior Full-Stack Developer">Senior Full-Stack Developer</SelectItem>
-                                    <SelectItem value="Cybersecurity Analyst">Cybersecurity Analyst</SelectItem>
-                                    <SelectItem value="AI/ML Engineer">AI/ML Engineer</SelectItem>
-                                    <SelectItem value="Data Scientist">Data Scientist</SelectItem>
-                                    <SelectItem value="Product Manager">Product Manager</SelectItem>
-                                    <SelectItem value="UI/UX Designer">UI/UX Designer</SelectItem>
-                                    <SelectItem value="DevOps Engineer">DevOps Engineer</SelectItem>
-                                    <SelectItem value="Technical Writer">Technical Writer</SelectItem>
-                                    <SelectItem value="General Assistant">General Assistant</SelectItem>
-                                </SelectContent>
-                            </Select>
+                            <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Target Persona (Role)</label>
+                            <Input
+                                value={persona}
+                                onChange={(e) => setPersona(e.target.value)}
+                                placeholder="e.g. Senior Backend Engineer"
+                                className="w-full bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 focus-visible:ring-1 focus-visible:ring-zinc-300 dark:focus-visible:ring-zinc-700 h-10 shadow-sm"
+                            />
                         </div>
                         <div className="space-y-1.5">
-                            <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Desired Output Format</label>
-                            <Select value={format} onValueChange={setFormat}>
-                                <SelectTrigger className="w-full bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 focus:ring-1 focus:ring-zinc-300 dark:focus:ring-zinc-700 h-10">
-                                    <SelectValue placeholder="Select Format" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="Code Blocks">Code Blocks</SelectItem>
-                                    <SelectItem value="Step-by-Step Guide">Step-by-Step Guide</SelectItem>
-                                    <SelectItem value="Markdown Document">Markdown Document</SelectItem>
-                                    <SelectItem value="JSON Payload">JSON Payload</SelectItem>
-                                </SelectContent>
-                            </Select>
+                            <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Secondary Specialized Field <span className="text-zinc-400 font-normal">(Optional)</span></label>
+                            <Input
+                                value={specializedField}
+                                onChange={(e) => setSpecializedField(e.target.value)}
+                                placeholder="e.g. Cybersecurity"
+                                className="w-full bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 focus-visible:ring-1 focus-visible:ring-zinc-300 dark:focus-visible:ring-zinc-700 h-10 shadow-sm"
+                            />
                         </div>
                     </div>
 
@@ -139,7 +113,7 @@ export default function PromptGenerator() {
 
                     <Button
                         onClick={handleGenerate}
-                        disabled={isGenerating || !roughIdea.trim() || !persona || !format}
+                        disabled={isGenerating || !roughIdea.trim() || !persona.trim()}
                         className="w-full h-12 bg-zinc-900 text-zinc-50 hover:bg-zinc-900/90 dark:bg-purple-600 dark:text-zinc-50 dark:hover:bg-purple-500 disabled:bg-zinc-100 disabled:text-zinc-400 dark:disabled:bg-zinc-800 dark:disabled:text-zinc-500 disabled:opacity-100 font-medium transition-all shadow-sm rounded-xl"
                     >
                         {isGenerating && !outputPrompt ? (

@@ -65,7 +65,7 @@ ${text}
     }
 }
 
-export async function generateExpertPrompt(persona: string, format: string, roughIdea: string): Promise<string> {
+export async function generateExpertPrompt(persona: string, specializedField: string, roughIdea: string): Promise<string> {
     const activeKey = getActiveApiKey();
 
     if (!roughIdea.trim()) {
@@ -76,21 +76,26 @@ export async function generateExpertPrompt(persona: string, format: string, roug
         const genAI = new GoogleGenerativeAI(activeKey);
         const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
-        const prompt = `You are an Expert Prompt Engineer. Your objective is to take the user's rough, informal idea and transform it into a highly detailed, professional prompt that will yield the best possible result from an AI model.
+        const fieldContext = specializedField.trim() ? ` along with knowledge in ${specializedField}` : "";
 
-The user has specified the following constraints for the final AI that will read this prompt:
-- Target Persona: ${persona}
-- Expected Output Format: ${format}
+        const prompt = `You are an Expert Prompt Engineer. Your objective is to take the user's rough, informal idea (often given as raw bullet points) and transform it into a highly detailed, extremely professional engineered prompt that will yield the best possible result from an LLM.
 
-Using the rough idea provided, generate a master prompt following this structure:
-1. Role & Context: Establish the persona.
-2. The Task: Define exactly what needs to be done.
-3. Constraints & Guidelines: Detail rules the AI must follow (e.g., "Use clean code", "Focus on security vulnerabilities", "Avoid deprecated libraries", "Keep it concise").
-4. Expected Output: Reiterate the format requested.
+The prompt you are generating MUST strictly start with exactly this structure:
+"You are an Expert ${persona}${fieldContext}..."
 
-CRITICAL: DO NOT wrap your entire output in a \`\`\`markdown ... \`\`\` code block. Do not use ANY outer code blocks. Your output must be purely the raw engineered prompt text itself. Do not provide conversational filler.
+Followed seamlessly by the structured instructions engineered from the user's rough idea.
 
-Rough Idea: ${roughIdea}
+Using the rough idea provided, construct the rest of the master prompt following this logic:
+1. Context & Task: Define exactly the overarching goal and provide necessary background context based on their notes.
+2. Constraints & Rules: Detail explicit rules the AI must follow derived from their idea (e.g., specific framework paradigms to adhere to, boundaries to respect).
+3. The Requirements: List out the concrete steps or specific deliverables needed from the LLM.
+
+CRITICAL: DO NOT wrap your entire output in a \`\`\`markdown ... \`\`\` code block. Do not use ANY outer code blocks. Your output must be purely the raw engineered prompt text itself. Do not provide conversational filler. 
+
+Format your engineered prompt cleanly using Markdown so it can be easily copied and pasted to another LLM interface.
+
+User's Rough Idea: 
+${roughIdea}
 `;
 
         const result = await model.generateContent(prompt);
