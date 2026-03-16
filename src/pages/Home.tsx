@@ -42,9 +42,16 @@ export default function Home() {
                         </div>
 
                         <div className="space-y-1">
-                            <strong className="text-zinc-900 dark:text-zinc-100 text-sm">GeoJSON Validator & Mapper</strong>
+                            <strong className="text-zinc-900 dark:text-zinc-100 text-sm">GeoJSON Validator &amp; Mapper</strong>
                             <p className="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed">
                                 Paste or drag-and-drop GeoJSON data to instantly view and validate it on an interactive map. Features live syntax checking, right-click coordinate extraction, and seamless TileLayer swapping.
+                            </p>
+                        </div>
+
+                        <div className="space-y-1">
+                            <strong className="text-zinc-900 dark:text-zinc-100 text-sm">Scribe to Vault</strong>
+                            <p className="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed">
+                                Upload a scanned PDF of handwritten notes photographed via a phone camera. Gemini AI transcribes the handwriting into topic-wise GitHub-Flavored Markdown files. Review and curate them on a Kanban board, then download a ready-to-import zip for your Obsidian vault.
                             </p>
                         </div>
                     </div>

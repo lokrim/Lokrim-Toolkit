@@ -29,6 +29,14 @@ Instantly visualize, validate, and extract coordinates from GeoJSON data.
 - **Interactive Mapping**: Automatically fits the map to your valid geometry bounds. Choose between OSM Standard, CartoDB Positron, or CartoDB Dark Matter tile layers—all strictly adhering to the global dark mode toggle.
 - **Right-Click Extraction**: Right-click anywhere on the map to spawn a secure copying popup that extracts the exact `lat, long` coordinates directly to your clipboard.
 
+### ✍️ Scribe to Vault (Handwritten Notes → Markdown)
+Transcribe scanned handwritten notes into structured Markdown files ready for Obsidian.
+- **AI-Powered Transcription**: Upload a scanned PDF (up to 50 MB) of phone-camera photographed notes. Gemini 2.5 Flash handles bad lighting, shadows, and skewed angles automatically.
+- **Topic-Wise Splitting**: The AI intelligently identifies distinct subject boundaries and produces a separate `.md` file per topic.
+- **Smart Formatting**: Hand-drawn grids become proper Markdown tables; diagrams and sketches become rich Obsidian `[!abstract]` callout placeholders with detailed descriptions.
+- **Kanban Review Board**: Inspect rendered GFM previews of each topic on a drag-and-drop Kanban board. Curate exactly which notes go into your vault before downloading.
+- **One-Click Vault Import**: Download all "Ready to Export" cards as a `.zip` archive of individual `.md` files, ready to drop directly into your Obsidian vault folder.
+
 ### 🔑 Bring Your Own Key (BYOK) Architecture
 No backend user authentication is required to manage API credits or subscriptions. 
 Click the **Settings** menu in the bottom-left sidebar to securely paste your own **Google Gemini API Key** and **ConvertAPI Secret**. These keys are stored safely in your browser's `localStorage` and are never sent anywhere except directly to their respective providers.
@@ -107,7 +115,7 @@ The project is fully configured as a Single Page Application (SPA) for Firebase 
 - **Styling**: Tailwind CSS v4
 - **Components**: `shadcn/ui` (Radix UI) + Lucide React icons
 - **AI / Conversion**: `@google/generative-ai` SDK, `pdf-lib`
-- **Utilities**: `turndown` for HTML parsing, `react-router-dom` for navigation, `sonner` for local toasts, `@hello-pangea/dnd` & `react-dropzone` for array management.
+- **Utilities**: `turndown` for HTML parsing, `react-router-dom` for navigation, `sonner` for local toasts, `@hello-pangea/dnd` & `react-dropzone` for array management, `react-markdown` + `remark-gfm` for GFM rendering, `jszip` + `file-saver` for vault export.
 
 ## License
 MIT

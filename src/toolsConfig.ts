@@ -1,8 +1,9 @@
-import { FileText, Bot, FileJson2, Map } from "lucide-react";
+import { FileText, Bot, FileJson2, Map, NotebookPen } from "lucide-react";
 import MarkdownConverter from "@/pages/tools/MarkdownConverter";
 import PromptGenerator from "@/pages/tools/PromptGenerator";
 import PdfPipeline from "@/pages/tools/PdfPipeline";
 import GeoJsonViewer from "@/pages/tools/GeoJsonViewer";
+import ScribeToVault from "@/pages/tools/ScribeToVault";
 
 /**
  * Core Configuration for lokrim.toolkit
@@ -58,5 +59,13 @@ export const toolsConfig: ToolConfig[] = [
         icon: Map,
         component: GeoJsonViewer,
         description: "Paste GeoJSON data to instantly view and validate it on an interactive map. Right click to copy coordinates.",
+    },
+    {
+        id: "scribe-to-vault",
+        name: "Scribe to Vault",
+        path: "/tools/scribe-to-vault",
+        icon: NotebookPen,
+        component: ScribeToVault,
+        description: "Upload a scanned PDF of handwritten notes. AI splits them into topic-wise Markdown files for your Obsidian vault.",
     }
 ];
