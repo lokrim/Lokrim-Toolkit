@@ -1,11 +1,38 @@
 import { useState } from "react";
 import { Copy, Loader2, FileCheck2, RefreshCw, Clock, ChevronRight } from "lucide-react";
-import { convertTextToMarkdown } from "@/lib/gemini";
+import { createGeminiModel } from "@/lib/gemini";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import TurndownService from "turndown";
+
+// ---------------------------------------------------------------------------
+// System prompt
+// ---------------------------------------------------------------------------
+const MARKDOWN_CONVERSION_PROMPT = (text: string) => `You are an expert technical editor and knowledge management assistant. Your task is to process raw, unstructured text (often a "Select All + Copy" dump from a web page) and convert it into clean, highly structured Markdown optimized for Obsidian study notes.
+
+Adhere strictly to the following rules:
+1. Extract Core Content: Identify and retain only the primary article, tutorial, or documentation. Ruthlessly remove all web boilerplate, navigation menus, sidebar text, cookie notices, advertisements, and footers.
+2. Preserve Media & Links: You MUST retain all valid hyperlinks \`[text](url)\` and image references \`![alt text](image_url)\`. Ensure image links remain intact and correctly formatted.
+3. Structural Formatting:
+   - Use strict hierarchical headings (H1 for the main title, H2 for main sections, H3 for sub-sections).
+   - Convert dense, messy paragraphs into readable bulleted or numbered lists where logical.
+   - Use bold text for key terms and standard Markdown blockquotes (\`>\`) for important notes or warnings.
+4. Code Blocks: Format all code snippets with standard triple backticks and the appropriate language identifier (e.g., \`javascript\`, \`python\`, \`bash\`).
+
+CRITICAL: DO NOT wrap your entire output in a \`\`\`markdown ... \`\`\` code block. The output must be the raw markdown text itself, starting immediately with the content (e.g. the YAML block or heading). Do not include any starting/ending markdown notation around the whole thing. Do not include conversational filler.
+
+Raw text:
+${text}
+`;
+
+async function convertTextToMarkdown(text: string): Promise<string> {
+    if (!text.trim()) throw new Error("Input text is empty. Please provide some text to convert.");
+    const model = createGeminiModel(); // uses global API key + selected model
+    const result = await model.generateContent(MARKDOWN_CONVERSION_PROMPT(text));
+    return result.response.text();
+}
 
 interface HistoryItem {
     id: string;

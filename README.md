@@ -5,9 +5,9 @@ A sleek, lightweight web application built for personal utility and knowledge ma
 ## Features
 
 ### 📝 Web to Obsidian Notes (Text to clean Markdown)
-A powerful tool designed specifically for knowledge hoarders and Obsidian users. 
+A powerful tool designed specifically for knowledge hoarders and Obsidian users.
 - **Rich-Text Pasting**: Cmd+A / Copy an entire webpage, and simply paste it into the converter. It automatically parses the HTML, preserving all important hyperlinks (`[text](url)`) and image references (`![text](img)`).
-- **AI-Powered Structuring**: Uses the `gemini-2.5-flash` model to intelligently strip noisy web boilerplate (ads, menus, footers), add strict hierarchical formatting, and turn paragraphs into readable bullet points suitable for a personal knowledge vault.
+- **AI-Powered Structuring**: Uses your globally selected Gemini model to intelligently strip noisy web boilerplate (ads, menus, footers), add strict hierarchical formatting, and turn paragraphs into readable bullet points suitable for a personal knowledge vault.
 - **Local History**: Your last 3 conversions are stored securely in your browser's local storage so you can easily restore past notes.
 - **Regenerate Prompt**: Easily retry the AI generation with a single click if the structure isn't perfect.
 
@@ -31,14 +31,19 @@ Instantly visualize, validate, and extract coordinates from GeoJSON data.
 
 ### ✍️ Scribe to Vault (Handwritten PDF → Markdown)
 A multi-pass AI pipeline that turns scanned handwritten notes into a single, clean, vault-ready `.md` file.
-- **Multi-Pass Architecture**: Pass 1 runs a strict verbatim OCR across the PDF (chunked into 8-page batches when needed). Pass 2 converts the raw transcript into structured GFM Markdown. A **repeatable Polish Further** pass then performs a deep structural refinement — improving headings, tables, definitions, and diagram callouts — and can be triggered as many times as needed.
+- **Multi-Pass Architecture**: Pass 1 runs a strict verbatim OCR across the PDF (chunked into 8-page batches for large documents). Pass 2 converts the raw transcript into structured GFM Markdown. A repeatable **Polish Further** pass performs deep structural refinement (headings, tables, definitions, diagram callouts). A separate repeatable **Expand Notes** pass enriches the document by adding definitions, worked examples, real-world context, and key caveats for any sparse or bare-label content — all without touching the original text.
 - **Smart Chunking**: PDFs over 7 pages are automatically split into 8-page OCR batches, processed sequentially, and stitched before the polish pass — preventing token-limit truncation on large documents.
 - **Detailed Formatting**: Hand-drawn grids become valid GFM tables; diagrams become rich Obsidian `[!abstract]` callout placeholders with vivid descriptions suitable for later image generation.
 - **Editable Output**: The final Markdown is displayed in an editable textarea. Rename the file before downloading — the filename is auto-derived from the document's H1 heading. Download as a single `.md` file with one click.
 
 ### 🔑 Bring Your Own Key (BYOK) Architecture
-No backend user authentication is required to manage API credits or subscriptions. 
-Click the **Settings** menu in the bottom-left sidebar to securely paste your own **Google Gemini API Key** and **ConvertAPI Secret**. These keys are stored safely in your browser's `localStorage` and are never sent anywhere except directly to their respective providers.
+No backend user authentication is required to manage API credits or subscriptions.
+Click the **Settings** menu in the bottom-left sidebar to:
+- Paste your own **Google Gemini API Key** (from [Google AI Studio](https://aistudio.google.com/)).
+- Select your preferred **Gemini model** from the registry (Gemini 2.5 Flash, 2.5 Pro, 3 Flash, etc.). All AI-powered tools automatically use whichever model is selected.
+- Paste your **ConvertAPI Secret** (required only for the PDF Pipeline's Office document support).
+
+Keys are stored safely in your browser's `localStorage` and are never sent anywhere except directly to their respective providers. All tools share a single `createGeminiModel()` factory in `src/lib/gemini.ts`, so switching models in Settings instantly applies across every tool.
 
 ---
 
@@ -113,8 +118,9 @@ The project is fully configured as a Single Page Application (SPA) for Firebase 
 - **Framework**: React + Vite + TypeScript
 - **Styling**: Tailwind CSS v4
 - **Components**: `shadcn/ui` (Radix UI) + Lucide React icons
-- **AI / Conversion**: `@google/generative-ai` SDK, `pdf-lib`
-- **Utilities**: `turndown` for HTML parsing, `react-router-dom` for navigation, `sonner` for local toasts, `@hello-pangea/dnd` & `react-dropzone` for array management, `react-markdown` + `remark-gfm` for GFM rendering, `jszip` + `file-saver` for vault export.
+- **AI**: `@google/generative-ai` SDK — all tools share `createGeminiModel()` from `src/lib/gemini.ts`
+- **PDF Processing**: `pdf-lib` (local PDF creation, merging, and chunking)
+- **Utilities**: `turndown` (HTML→Markdown parsing), `react-router-dom` (navigation), `sonner` (toasts), `@hello-pangea/dnd` + `react-dropzone` (drag-and-drop), `ConvertAPI` (Office document conversion)
 
 ## License
 MIT

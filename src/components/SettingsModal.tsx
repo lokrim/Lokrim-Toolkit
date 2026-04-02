@@ -10,30 +10,52 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Settings, Key, FileJson } from "lucide-react";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import { Settings, Key, FileJson, Bot } from "lucide-react";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { toast } from "sonner";
+import { GEMINI_MODELS, DEFAULT_GEMINI_MODEL, type GeminiModelId } from "@/lib/gemini";
 
 export default function SettingsModal() {
     const [geminiKey, setGeminiKey] = useLocalStorage<string>("lokrim_gemini_key", "");
     const [convertKey, setConvertKey] = useLocalStorage<string>("lokrim_convert_key", "");
+    const [geminiModel, setGeminiModel] = useLocalStorage<GeminiModelId>(
+        "lokrim_gemini_model",
+        DEFAULT_GEMINI_MODEL
+    );
 
     const [tempGemini, setTempGemini] = React.useState(geminiKey);
     const [tempConvert, setTempConvert] = React.useState(convertKey);
+    const resolvedModel = (GEMINI_MODELS.some((m) => m.id === geminiModel)
+        ? geminiModel
+        : DEFAULT_GEMINI_MODEL) as GeminiModelId;
+    const [tempModel, setTempModel] = React.useState<GeminiModelId>(resolvedModel);
 
     const [isOpen, setIsOpen] = React.useState(false);
 
-    // Sync temp keys when open
+    // Sync temp values when dialog opens
     React.useEffect(() => {
         if (isOpen) {
             setTempGemini(geminiKey);
             setTempConvert(convertKey);
+            // Re-validate on every open in case registry changed since last render
+            const valid = GEMINI_MODELS.some((m) => m.id === geminiModel)
+                ? geminiModel
+                : DEFAULT_GEMINI_MODEL;
+            setTempModel(valid as GeminiModelId);
         }
-    }, [isOpen, geminiKey, convertKey]);
+    }, [isOpen, geminiKey, convertKey, geminiModel]);
 
     const handleSave = () => {
         setGeminiKey(tempGemini);
         setConvertKey(tempConvert);
+        setGeminiModel(tempModel);
         setIsOpen(false);
         toast.success("Settings saved successfully.");
     };
@@ -46,7 +68,7 @@ export default function SettingsModal() {
                     <span>Settings</span>
                 </button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="sm:max-w-[450px]">
                 <DialogHeader>
                     <DialogTitle>Toolkit Settings</DialogTitle>
                     <DialogDescription>
@@ -54,6 +76,34 @@ export default function SettingsModal() {
                     </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-6 py-4">
+
+                    {/* ── Gemini Model Selection ── */}
+                    <div className="flex flex-col space-y-2">
+                        <Label htmlFor="geminiModel" className="flex items-center space-x-2">
+                            <Bot className="w-4 h-4" />
+                            <span>Gemini Model</span>
+                        </Label>
+                        <Select
+                            value={tempModel}
+                            onValueChange={(val) => setTempModel(val as GeminiModelId)}
+                        >
+                            <SelectTrigger id="geminiModel" className="w-full">
+                                <SelectValue placeholder="Select a model..." />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {GEMINI_MODELS.map((m) => (
+                                    <SelectItem key={m.id} value={m.id}>
+                                        {m.label}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                            Applied globally across all AI-powered tools. Stored locally.
+                        </p>
+                    </div>
+
+                    {/* ── Gemini API Key ── */}
                     <div className="flex flex-col space-y-2">
                         <Label htmlFor="geminiKey" className="flex items-center space-x-2">
                             <Key className="w-4 h-4" />
@@ -68,10 +118,11 @@ export default function SettingsModal() {
                             className="col-span-3 font-mono text-sm"
                         />
                         <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                            Required for "Web to Obsidian" and "Prompt Generator". Stored locally.
+                            Required for "Web to Obsidian", "Prompt Generator", and "Scribe to Vault". Stored locally.
                         </p>
                     </div>
 
+                    {/* ── ConvertAPI Key ── */}
                     <div className="flex flex-col space-y-2">
                         <Label htmlFor="convertKey" className="flex items-center space-x-2">
                             <FileJson className="w-4 h-4" />

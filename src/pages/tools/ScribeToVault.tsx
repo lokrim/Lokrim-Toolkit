@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { PDFDocument, type PDFPage } from "pdf-lib";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { createGeminiModel } from "@/lib/gemini";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -134,20 +134,6 @@ interface LogEntry {
     status: "done" | "running" | "error";
 }
 
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-function getActiveApiKey(): string {
-    let customKey = "";
-    try {
-        const stored = window.localStorage.getItem("lokrim_gemini_key");
-        if (stored) customKey = JSON.parse(stored);
-    } catch { /* ignore */ }
-    const envKey = (import.meta as any).env?.VITE_GEMINI_API_KEY || "";
-    const activeKey = customKey || envKey;
-    if (!activeKey) throw new Error("Gemini API key not found. Please add it in Settings (bottom-left sidebar).");
-    return activeKey;
-}
 
 async function fileToArrayBuffer(file: File): Promise<ArrayBuffer> {
     return new Promise((resolve, reject) => {
@@ -224,8 +210,6 @@ export default function ScribeToVault() {
     // -- Pass 1 + 2: OCR → Polish (combined, no user intervention) -----------
     const handleTranscribe = async () => {
         if (!file) { toast.error("Please upload a PDF file first."); return; }
-        let apiKey: string;
-        try { apiKey = getActiveApiKey(); } catch (err: any) { toast.error(err.message); return; }
 
         setStage("processing");
         setProgressLog([]);
@@ -249,9 +233,7 @@ export default function ScribeToVault() {
                 "done"
             );
 
-            const genAI = new GoogleGenerativeAI(apiKey);
-            const ocrModel = genAI.getGenerativeModel({
-                model: "gemini-3.1-flash-lite-preview",
+            const ocrModel = createGeminiModel({
                 systemInstruction: OCR_SYSTEM_PROMPT,
                 generationConfig: { temperature: 0.1 },
             });
@@ -295,8 +277,7 @@ export default function ScribeToVault() {
 
             // ── Phase 2: Polish ──────────────────────────────────────────────
             addLog("Polish pass: converting OCR text to GFM Markdown...", "running");
-            const polishModel = genAI.getGenerativeModel({
-                model: "gemini-3.1-flash-lite-preview",
+            const polishModel = createGeminiModel({
                 systemInstruction: POLISH_SYSTEM_PROMPT,
                 generationConfig: { temperature: 0.2 },
             });
@@ -321,16 +302,12 @@ export default function ScribeToVault() {
     // -- Pass 3+: Refinement (repeatable) ------------------------------------
     const handleRefine = async () => {
         if (!markdownOutput.trim()) { toast.error("No output to refine."); return; }
-        let apiKey: string;
-        try { apiKey = getActiveApiKey(); } catch (err: any) { toast.error(err.message); return; }
 
         setStage("refining");
         addLog(`Refinement pass ${refineCount + 1}: analysing and improving structure...`, "running");
 
         try {
-            const genAI = new GoogleGenerativeAI(apiKey);
-            const refineModel = genAI.getGenerativeModel({
-                model: "gemini-3.1-flash-lite-preview",
+            const refineModel = createGeminiModel({
                 systemInstruction: REFINE_SYSTEM_PROMPT,
                 generationConfig: { temperature: 0.3 },
             });
@@ -356,16 +333,12 @@ export default function ScribeToVault() {
     // -- Expand: fill gaps with definitions, examples, context ---------------
     const handleExpand = async () => {
         if (!markdownOutput.trim()) { toast.error("No output to expand."); return; }
-        let apiKey: string;
-        try { apiKey = getActiveApiKey(); } catch (err: any) { toast.error(err.message); return; }
 
         setStage("expanding");
         addLog(`Expand pass ${expandCount + 1}: adding definitions, examples, and context...`, "running");
 
         try {
-            const genAI = new GoogleGenerativeAI(apiKey);
-            const expandModel = genAI.getGenerativeModel({
-                model: "gemini-3.1-flash-lite-preview",
+            const expandModel = createGeminiModel({
                 systemInstruction: EXPAND_SYSTEM_PROMPT,
                 generationConfig: { temperature: 0.4 },
             });
@@ -430,7 +403,7 @@ export default function ScribeToVault() {
                             Scribe to Vault
                         </h1>
                         <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
-                            Multi-pass AI pipeline: OCR → polish → refine. One PDF, one clean&nbsp;.md file.
+                            Multi-pass AI pipeline: OCR → polish → refine. One PDF, one clean&nbsp;.md file. Use the lite model for better results
                         </p>
                     </div>
                     <div className="flex items-center gap-3 shrink-0">

@@ -1,11 +1,46 @@
 import { useState } from "react";
 import { Copy, Loader2, FileCheck2, Bot } from "lucide-react";
-import { generateExpertPrompt } from "@/lib/gemini";
+import { createGeminiModel } from "@/lib/gemini";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
+
+// ---------------------------------------------------------------------------
+// System prompt
+// ---------------------------------------------------------------------------
+const EXPERT_PROMPT_SYSTEM = `You are an Expert Prompt Engineer. Your objective is to take the user's rough, informal idea (often given as raw bullet points) and transform it into a highly detailed, extremely professional engineered prompt that will yield the best possible result from an LLM.
+
+The prompt you are generating MUST strictly start with exactly the persona/field structure provided by the user.
+
+Followed seamlessly by the structured instructions engineered from the user's rough idea:
+1. Context & Task: Define exactly the overarching goal and provide necessary background context based on their notes.
+2. Constraints & Rules: Detail explicit rules the AI must follow derived from their idea (e.g., specific framework paradigms to adhere to, boundaries to respect).
+3. The Requirements: List out the concrete steps or specific deliverables needed from the LLM.
+
+CRITICAL: DO NOT wrap your entire output in a \`\`\`markdown ... \`\`\` code block. Do not use ANY outer code blocks. Your output must be purely the raw engineered prompt text itself. Do not provide conversational filler.
+
+Format your engineered prompt cleanly using Markdown so it can be easily copied and pasted to another LLM interface.`;
+
+function buildExpertPromptInput(persona: string, specializedField: string, roughIdea: string): string {
+    const fieldContext = specializedField.trim() ? ` along with knowledge in ${specializedField}` : "";
+    return `Generate a master prompt that starts with exactly: "You are an Expert ${persona}${fieldContext}..."
+
+User's Rough Idea:
+${roughIdea}`;
+}
+
+async function generateExpertPrompt(
+    persona: string,
+    specializedField: string,
+    roughIdea: string
+): Promise<string> {
+    if (!roughIdea.trim()) throw new Error("Rough idea is empty. Please provide a rough idea to generate a prompt.");
+    const model = createGeminiModel({ systemInstruction: EXPERT_PROMPT_SYSTEM });
+    const result = await model.generateContent(buildExpertPromptInput(persona, specializedField, roughIdea));
+    return result.response.text();
+}
 
 /**
  * Master Prompt Generator Tool
