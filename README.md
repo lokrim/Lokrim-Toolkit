@@ -29,13 +29,12 @@ Instantly visualize, validate, and extract coordinates from GeoJSON data.
 - **Interactive Mapping**: Automatically fits the map to your valid geometry bounds. Choose between OSM Standard, CartoDB Positron, or CartoDB Dark Matter tile layers—all strictly adhering to the global dark mode toggle.
 - **Right-Click Extraction**: Right-click anywhere on the map to spawn a secure copying popup that extracts the exact `lat, long` coordinates directly to your clipboard.
 
-### ✍️ Scribe to Vault (Handwritten Notes → Markdown)
-Transcribe scanned handwritten notes into structured Markdown files ready for Obsidian.
-- **AI-Powered Transcription**: Upload a scanned PDF (up to 50 MB) of phone-camera photographed notes. Gemini 2.5 Flash handles bad lighting, shadows, and skewed angles automatically.
-- **Topic-Wise Splitting**: The AI intelligently identifies distinct subject boundaries and produces a separate `.md` file per topic.
-- **Smart Formatting**: Hand-drawn grids become proper Markdown tables; diagrams and sketches become rich Obsidian `[!abstract]` callout placeholders with detailed descriptions.
-- **Kanban Review Board**: Inspect rendered GFM previews of each topic on a drag-and-drop Kanban board. Curate exactly which notes go into your vault before downloading.
-- **One-Click Vault Import**: Download all "Ready to Export" cards as a `.zip` archive of individual `.md` files, ready to drop directly into your Obsidian vault folder.
+### ✍️ Scribe to Vault (Handwritten PDF → Markdown)
+A multi-pass AI pipeline that turns scanned handwritten notes into a single, clean, vault-ready `.md` file.
+- **Multi-Pass Architecture**: Pass 1 runs a strict verbatim OCR across the PDF (chunked into 8-page batches when needed). Pass 2 converts the raw transcript into structured GFM Markdown. A **repeatable Polish Further** pass then performs a deep structural refinement — improving headings, tables, definitions, and diagram callouts — and can be triggered as many times as needed.
+- **Smart Chunking**: PDFs over 7 pages are automatically split into 8-page OCR batches, processed sequentially, and stitched before the polish pass — preventing token-limit truncation on large documents.
+- **Detailed Formatting**: Hand-drawn grids become valid GFM tables; diagrams become rich Obsidian `[!abstract]` callout placeholders with vivid descriptions suitable for later image generation.
+- **Editable Output**: The final Markdown is displayed in an editable textarea. Rename the file before downloading — the filename is auto-derived from the document's H1 heading. Download as a single `.md` file with one click.
 
 ### 🔑 Bring Your Own Key (BYOK) Architecture
 No backend user authentication is required to manage API credits or subscriptions. 

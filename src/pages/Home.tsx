@@ -51,7 +51,7 @@ export default function Home() {
                         <div className="space-y-1">
                             <strong className="text-zinc-900 dark:text-zinc-100 text-sm">Scribe to Vault</strong>
                             <p className="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed">
-                                Upload a scanned PDF of handwritten notes photographed via a phone camera. Gemini AI transcribes the handwriting into topic-wise GitHub-Flavored Markdown files. Review and curate them on a Kanban board, then download a ready-to-import zip for your Obsidian vault.
+                                Upload a scanned PDF of handwritten notes. A multi-pass AI pipeline (OCR → polish → repeatable refinement) produces a single, clean, vault-ready Markdown file. Edit the output in-app and download as a named <code>.md</code> file.
                             </p>
                         </div>
                     </div>
