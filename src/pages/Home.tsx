@@ -100,6 +100,13 @@ export default function Home() {
                                 No user accounts, no server-side storage, no telemetry. Every key and piece of history lives exclusively in your browser's local storage.
                             </p>
                         </div>
+
+                        <div className="space-y-1 pt-1 border-t border-zinc-100 dark:border-zinc-800">
+                            <strong className="text-zinc-900 dark:text-zinc-100 text-sm">Contributing a Tool</strong>
+                            <p className="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed">
+                                New tools follow a 5-step pattern: create prompt constants → build an AI hook → build the view component → register in <code className="text-xs font-mono bg-zinc-100 dark:bg-zinc-800 px-1 py-0.5 rounded">toolsConfig.ts</code> → update the README. See the <strong className="text-zinc-800 dark:text-zinc-200">Developer Guide</strong> in the README for the full workflow with code templates.
+                            </p>
+                        </div>
                     </div>
                 </div>
 

@@ -94,122 +94,198 @@ The application is live and free to use: [https://lokrim-toolkit.web.app](https:
 
 ### Project Architecture
 
-The application is built for maximum scalability — adding a new tool requires touching only three files and creating one new component.
-
 ```
 src/
-  App.tsx              — Top-level router (auto-generates routes from toolsConfig)
-  toolsConfig.ts       — Single source of truth for all tool registrations
+  App.tsx                    — Top-level router (auto-generates routes from toolsConfig)
+  toolsConfig.ts             — Single source of truth for all tool registrations
   lib/
-    gemini.ts          — Shared AI factory: model registry, BYOK key resolution, createGeminiModel()
+    gemini.ts                — Shared AI factory: model registry, BYOK key resolution, createGeminiModel()
+    storage.ts               — Central localStorage schema: all key names live here
+    pdfPipelineUtils.ts      — PDF merge/convert logic (shared lib for the PDF Pipeline tool)
+    prompts/
+      promptGenerator.ts     — System prompts + input builders for the Prompt Generator
+      scribeToVault.ts       — System prompts for the Scribe to Vault pipeline
+      markdownConverter.ts   — System prompt for the Web to Obsidian tool
   hooks/
-    useLocalStorage.ts — Shared localStorage hook for persistent state
+    useLocalStorage.ts       — Typed localStorage hook with cross-tab sync
+    usePromptGenerator.ts    — AI logic + history for the Prompt Generator tool
+    useScribeToVault.ts      — Multi-pass AI pipeline for the Scribe to Vault tool
   pages/
-    Home.tsx           — Dashboard
+    Home.tsx                 — Dashboard
     tools/
-      MarkdownConverter.tsx   — Web to Obsidian Notes tool
-      PromptGenerator.tsx     — Master Prompt Generator tool
-      PdfPipeline.tsx         — Universal PDF Pipeline tool
-      GeoJsonViewer.tsx       — GeoJSON Validator & Mapper tool
-      ScribeToVault.tsx       — Scribe to Vault tool
+      MarkdownConverter.tsx  — Web to Obsidian Notes tool (view layer)
+      PromptGenerator.tsx    — Master Prompt Generator tool (view layer)
+      PdfPipeline.tsx        — Universal PDF Pipeline tool
+      GeoJsonViewer.tsx      — GeoJSON Validator & Mapper tool
+      ScribeToVault.tsx      — Scribe to Vault tool (view layer)
   components/
-    ui/                — shadcn/ui component library
+    ui/                      — shadcn/ui component library
   layouts/
-    DashboardLayout.tsx — Sidebar + content shell (auto-generates nav from toolsConfig)
+    DashboardLayout.tsx      — Sidebar + content shell (auto-generates nav from toolsConfig)
 ```
 
 ### Shared Libraries
 
-Only infrastructure that is genuinely shared across multiple tools belongs in shared files. The rule is: **if it is only used by one tool, it lives in that tool's file.**
+Only infrastructure that is genuinely shared across multiple tools belongs in `src/lib/`. The rule is: **if it is only used by one tool, it lives in that tool's files.**
 
 #### `src/lib/gemini.ts`
 
-Responsible for three things only:
+Three responsibilities only:
+1. **Model Registry** (`GEMINI_MODELS`, `DEFAULT_GEMINI_MODEL`, `GeminiModelId`) — add a new model here to make it appear in the Settings modal.
+2. **API Key Resolution** (`getActiveApiKey()`) — reads the BYOK key from `localStorage` via `STORAGE_KEYS`, falls back to `VITE_GEMINI_API_KEY`, throws a user-friendly error if neither is present.
+3. **Model Factory** (`createGeminiModel(options?)`) — combines the active key and selected model into a ready-to-use `GenerativeModel`.
 
-1. **Model Registry** (`GEMINI_MODELS`, `DEFAULT_GEMINI_MODEL`, `GeminiModelId`) — the authoritative list of available Gemini models. Adding a model here automatically makes it appear in the Settings modal dropdown.
-2. **API Key Resolution** (`getActiveApiKey()`) — reads the BYOK key from `localStorage`, falls back to `VITE_GEMINI_API_KEY`, and throws a user-friendly error if neither is present.
-3. **Model Factory** (`createGeminiModel(options?)`) — convenience function that combines the active key and the selected model into a ready-to-use `GenerativeModel` instance.
+#### `src/lib/storage.ts`
 
-Everything else — system prompts, generation configs, temperature values — belongs in the tool file that uses them.
+The **single source of truth** for all `localStorage` key names. Every file in the project imports key names from here — no raw string literals appear elsewhere. Adding a new key: add it here first. Renaming a key: keep the old key as a read-side fallback and add a migration path (documented in the file).
+
+#### `src/lib/prompts/<toolName>.ts`
+
+Each AI-powered tool has its own prompts file. System prompts and input-builder functions live here so they can be reviewed, versioned, and iterated independently of UI or hook code.
 
 #### `src/hooks/useLocalStorage.ts`
 
-A typed React hook for reading and writing to `localStorage` with automatic JSON serialisation. Used by tools that need persistent state (e.g. Web to Obsidian history). Import it in any tool that needs local persistence.
+A typed React hook for reading and writing `localStorage` with automatic JSON serialisation. Import it in any tool that needs persistent state.
 
-### Adding a New Tool
+---
 
-Follow these four steps exactly:
+### Adding a New Tool (5 Steps)
 
-**Step 1 — Build the tool component**
+> **For non-AI tools** (like GeoJSON Viewer or PDF Pipeline): skip Steps 1–2 and put all logic directly in the component.
 
-Create `src/pages/tools/YourTool.tsx`. Keep the component fully self-contained:
+---
+
+**Step 1 — Create prompt constants** *(AI tools only)*
+
+Create `src/lib/prompts/yourTool.ts`. Export all system prompts and input-builder functions here. See `src/lib/prompts/promptGenerator.ts` for a template.
+
+```ts
+// src/lib/prompts/yourTool.ts
+
+/**
+ * MY_SYSTEM_PROMPT — role and task for the AI.
+ * @temperature 0.7
+ */
+export const MY_SYSTEM_PROMPT = `You are a ...`;
+
+/**
+ * Builds the user-facing input message for the generate pass.
+ */
+export function buildInput(userText: string): string {
+    return `Do the task with: ${userText}`;
+}
+```
+
+Key rules for prompt files:
+- Each exported prompt gets a JSDoc comment documenting its design principles and recommended temperature.
+- Input builders are pure functions — no state, no side effects.
+- Never import React or any UI library here.
+
+---
+
+**Step 2 — Create an AI hook** *(AI tools only)*
+
+Create `src/hooks/useYourTool.ts`. Import your prompts from Step 1 and `createGeminiModel` from `@/lib/gemini`. All async AI calls, `useState`, and `localStorage` reads/writes go here.
+
+```ts
+// src/hooks/useYourTool.ts
+
+import { useState } from "react";
+import { toast } from "sonner";
+import { createGeminiModel } from "@/lib/gemini";
+import { STORAGE_KEYS } from "@/lib/storage";
+import { MY_SYSTEM_PROMPT, buildInput } from "@/lib/prompts/yourTool";
+
+export function useYourTool() {
+    const [output, setOutput] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
+
+    async function generate(userText: string) {
+        setIsLoading(true);
+        try {
+            const model = createGeminiModel({
+                systemInstruction: MY_SYSTEM_PROMPT,
+                generationConfig: { temperature: 0.7 },
+            });
+            const result = await model.generateContent(buildInput(userText));
+            setOutput(result.response.text());
+            toast.success("Done!");
+        } catch (err: unknown) {
+            // getActiveApiKey() throws a user-friendly Error if no key is configured.
+            // That message surfaces here via toast (crash-at-the-boundary pattern).
+            toast.error(err instanceof Error ? err.message : "Something went wrong.");
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
+    return { output, isLoading, generate };
+}
+```
+
+Key rules for hook files:
+- Use `STORAGE_KEYS` from `@/lib/storage` for all localStorage key names — never raw strings.
+- Use `createGeminiModel()` inside handlers, not at module load time.
+- Expose a clean state object and named action functions — the component should never need to call `useState` for AI state.
+
+---
+
+**Step 3 — Build the tool component**
+
+Create `src/pages/tools/YourTool.tsx`. Import and call your hook. The component is purely a **render layer** — no AI calls, no raw localStorage, no system prompts.
 
 ```tsx
 // src/pages/tools/YourTool.tsx
 
-import { createGeminiModel } from "@/lib/gemini";
-
-// Define all system prompts as constants at the top of this file.
-// Do NOT move prompts into gemini.ts — they are tool-specific.
-const MY_SYSTEM_PROMPT = `You are a ...`;
-
-// Define all input-building functions in this file.
-function buildInput(userText: string): string {
-  return `Do the thing with: ${userText}`;
-}
-
-// If you need localStorage persistence, use the shared hook.
-// import { useLocalStorage } from "@/hooks/useLocalStorage";
+import { useYourTool } from "@/hooks/useYourTool";
 
 export default function YourTool() {
-  // All state, handlers, and UI logic live here.
-  // Call createGeminiModel({ systemInstruction: MY_SYSTEM_PROMPT }) inside handlers.
-  return <div>...</div>;
+    const { output, isLoading, generate } = useYourTool();
+    return (
+        <div className="flex flex-col h-full w-full p-6 space-y-4">
+            {/* render state, dispatch actions back to hook */}
+        </div>
+    );
 }
 ```
 
-Key rules for tool files:
-- All Gemini system prompts and `generationConfig` values are defined as constants in the tool file.
-- Call `createGeminiModel()` inside async handlers (not at module level) so the API key is resolved at call time.
-- Use `crypto.randomUUID()` for IDs — no new dependencies needed.
-- Only import from `@/lib/gemini` what you actually use: typically just `createGeminiModel`.
-- If your tool needs local history, use `useLocalStorage` from `@/hooks/useLocalStorage`.
-- If your tool requires a new third-party API key, add a new input to `src/components/SettingsModal.tsx` and persist it to `localStorage`. Never hardcode credentials.
+Key rules for tool component files:
+- Import UI state setters (e.g. `persona`, `roughIdea`) with `useState` in the component — only field-level UI state that has no effect outside the component.
+- Never call `localStorage` directly in a component — use `useLocalStorage` or your custom hook.
+- If your tool requires a new third-party API key, add a new input to `src/components/SettingsModal.tsx` and persist it to a new key in `src/lib/storage.ts`.
 
-**Step 2 — Register the tool**
+---
 
-Open `src/toolsConfig.ts` and add one entry to the `toolsConfig` array. The router and sidebar are generated automatically from this array:
+**Step 4 — Register the tool**
+
+Open `src/toolsConfig.ts` and add a new entry to the `toolsConfig` array. Import your component and a `lucide-react` icon:
 
 ```ts
 import YourTool from "@/pages/tools/YourTool";
-import { YourIcon } from "lucide-react";
+import { Wrench } from "lucide-react";
 
 // Add to the toolsConfig array:
 {
-  id: "your-tool",
-  label: "Your Tool Name",
-  path: "/tools/your-tool",
-  component: YourTool,
-  icon: YourIcon,
+    id: "your-tool",
+    name: "Your Tool Name",
+    path: "/tools/your-tool",
+    icon: Wrench,
+    component: YourTool,
+    description: "One-sentence description for the Home dashboard card.",
+    // Optional metadata:
+    requiresGemini: true,
+    tags: ["ai", "text"],
+    status: "beta",
 },
 ```
 
-**Step 3 — Update the dashboard**
+The router, sidebar, and dashboard update automatically — no other files need to change.
 
-Open `src/pages/Home.tsx` and add a description block for your tool inside the Available Tools scrollable list:
+---
 
-```tsx
-<div className="space-y-1">
-  <strong className="text-zinc-900 dark:text-zinc-100 text-sm">Your Tool Name</strong>
-  <p className="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed">
-    What it does and why it is useful.
-  </p>
-</div>
-```
+**Step 5 — Update the README**
 
-**Step 4 — Update documentation**
-
-Add a section to this `README.md` under Features describing the new tool and its capabilities.
+Add a section under `## Features` in this file describing the new tool's capabilities.
 
 ---
 
@@ -221,6 +297,24 @@ To maintain the dark/light mode experience across all tools:
 - **Never** use inline React `style={{}}` overrides.
 - **Always** use Tailwind's `dark:` variant classes directly on elements (e.g. `className="bg-zinc-50 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-50"`).
 - Follow the existing zinc colour palette for neutral UI and purple (`dark:bg-purple-600`) for primary actions in dark mode.
+
+### localStorage Schema
+
+All `localStorage` key names are centralized in `src/lib/storage.ts`. The registry documents:
+- The key name string
+- The value type and shape
+- The owning tool or shared library
+
+**Never** use raw string literals for localStorage keys. Always import from `STORAGE_KEYS`.
+
+### Running Tests
+
+```bash
+npm test          # Run all tests once (CI mode)
+npm run test:watch  # Watch mode — re-runs on file changes
+```
+
+The test suite covers pure utility functions in `src/lib/`. Tests live in `src/lib/__tests__/`. Component and hook testing is in the backlog.
 
 ---
 
@@ -236,6 +330,9 @@ npm install
 
 # Start the development server
 npm run dev
+
+# Run the test suite
+npm test
 ```
 
 ---
@@ -264,6 +361,7 @@ The project is fully configured as a Single Page Application for Firebase Hostin
 | Drag and Drop | `@hello-pangea/dnd` + `react-dropzone` |
 | Office Conversion | ConvertAPI |
 | Maps | Leaflet + React-Leaflet |
+| Testing | `vitest` |
 
 ---
 

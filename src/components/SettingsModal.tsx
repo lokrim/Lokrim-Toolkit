@@ -21,12 +21,13 @@ import { Settings, Key, FileJson, Bot } from "lucide-react";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { toast } from "sonner";
 import { GEMINI_MODELS, DEFAULT_GEMINI_MODEL, type GeminiModelId } from "@/lib/gemini";
+import { STORAGE_KEYS } from "@/lib/storage";
 
 export default function SettingsModal() {
-    const [geminiKey, setGeminiKey] = useLocalStorage<string>("lokrim_gemini_key", "");
-    const [convertKey, setConvertKey] = useLocalStorage<string>("lokrim_convert_key", "");
+    const [geminiKey, setGeminiKey] = useLocalStorage<string>(STORAGE_KEYS.gemini.apiKey, "");
+    const [convertKey, setConvertKey] = useLocalStorage<string>(STORAGE_KEYS.convert.apiKey, "");
     const [geminiModel, setGeminiModel] = useLocalStorage<GeminiModelId>(
-        "lokrim_gemini_model",
+        STORAGE_KEYS.gemini.model,
         DEFAULT_GEMINI_MODEL
     );
 

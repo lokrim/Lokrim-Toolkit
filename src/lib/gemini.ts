@@ -1,8 +1,31 @@
+/**
+ * @file gemini.ts
+ * @description Shared Gemini AI factory for lokrim-toolkit.
+ *
+ * This module is the sole entrypoint for AI operations across all tools.
+ * It is responsible for exactly three things:
+ *  1. The Gemini model registry (`GEMINI_MODELS`, `DEFAULT_GEMINI_MODEL`)
+ *  2. BYOK key resolution (`getActiveApiKey`)
+ *  3. A convenience model factory (`createGeminiModel`)
+ *
+ * Everything else — system prompts, generation configs, temperature values —
+ * belongs in the tool's own file in `src/lib/prompts/` or in its hook.
+ *
+ * ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ * localStorage keys read by this module:
+ *  - STORAGE_KEYS.gemini.apiKey  — user-provided API key (BYOK, highest priority)
+ *  - STORAGE_KEYS.gemini.model   — user-selected model ID
+ * ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ */
+
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { STORAGE_KEYS } from "@/lib/storage";
 
 // ---------------------------------------------------------------------------
 // Model Registry
 // Add new models here — they will automatically appear in SettingsModal.
+// Remove obsolete models here — getActiveGeminiModel() gracefully falls back
+// to DEFAULT_GEMINI_MODEL if a user's stored ID is no longer in this list.
 // ---------------------------------------------------------------------------
 export const GEMINI_MODELS = [
     { id: "gemini-3-flash-preview", label: "Gemini 3 Flash (default)" },
@@ -17,41 +40,54 @@ export type GeminiModelId = typeof GEMINI_MODELS[number]["id"];
 export const DEFAULT_GEMINI_MODEL: GeminiModelId = "gemini-3-flash-preview";
 
 // ---------------------------------------------------------------------------
-// Shared helpers — used by every tool
+// Shared helpers — used by every AI-powered tool
 // ---------------------------------------------------------------------------
 
 /**
  * Returns the globally selected Gemini model ID from localStorage.
- * Falls back to DEFAULT_GEMINI_MODEL if nothing is stored or the stored
- * value is no longer in the registry.
+ *
+ * Resolution order:
+ *  1. Value stored at `STORAGE_KEYS.gemini.model` — used if it is still a
+ *     valid (registered) model ID.
+ *  2. Falls back to `DEFAULT_GEMINI_MODEL` if nothing is stored, the value
+ *     cannot be parsed, or the stored ID has been removed from the registry
+ *     (graceful deprecation handling).
+ *
+ * @returns A `GeminiModelId` that is guaranteed to be in `GEMINI_MODELS`
  */
 export function getActiveGeminiModel(): GeminiModelId {
     try {
-        const stored = window.localStorage.getItem("lokrim_gemini_model");
+        const stored = window.localStorage.getItem(STORAGE_KEYS.gemini.model);
         if (stored) {
             const parsed = JSON.parse(stored) as string;
             if (GEMINI_MODELS.some((m) => m.id === parsed)) {
                 return parsed as GeminiModelId;
             }
         }
-    } catch { /* ignore */ }
+    } catch { /* Ignore — fall through to default */ }
     return DEFAULT_GEMINI_MODEL;
 }
 
 /**
  * Resolves the active Gemini API key.
  *
- * Strategy (BYOK-first):
- *   1. User-provided key stored in localStorage  → used if present
- *   2. VITE_GEMINI_API_KEY env variable           → fallback for local dev
+ * Resolution order (BYOK-first):
+ *  1. User-provided key stored at `STORAGE_KEYS.gemini.apiKey` in localStorage
+ *     → used if present and non-empty.
+ *  2. `VITE_GEMINI_API_KEY` environment variable → fallback for local dev
+ *     (set in `.env`; never committed to source control).
  *
- * Throws a user-friendly error if no key is found so tools can surface it
- * via toast without extra boilerplate.
+ * @throws {Error} A user-friendly error message if no key is found anywhere.
+ *   This error is designed to bubble up to the component layer and be caught
+ *   by a try/catch, then surfaced to the user via a Sonner toast notification
+ *   (the "crash-at-the-boundary" pattern used throughout this app).
+ *
+ * @returns The active API key string
  */
 export function getActiveApiKey(): string {
     let customKey = "";
     try {
-        const stored = window.localStorage.getItem("lokrim_gemini_key");
+        const stored = window.localStorage.getItem(STORAGE_KEYS.gemini.apiKey);
         if (stored) customKey = JSON.parse(stored);
     } catch (e) {
         console.error("Failed to parse stored Gemini API key:", e);
@@ -66,17 +102,27 @@ export function getActiveApiKey(): string {
 }
 
 /**
- * Convenience factory used by tools to get a ready-to-use GenerativeModel.
+ * Convenience factory used by tools to get a ready-to-use `GenerativeModel`.
  *
- * Usage inside a tool:
- *   const model = createGeminiModel({ systemInstruction: MY_PROMPT });
- *   const result = await model.generateContent(userInput);
+ * Combines `getActiveApiKey()` and `getActiveGeminiModel()` into a single call.
+ * Always call this inside an async handler (not at module load time) so the
+ * API key is resolved at the moment of use, not at module initialisation.
+ *
+ * @param options - Passed directly to `GoogleGenerativeAI.getGenerativeModel()`.
+ *   Omit `model` to use the user's globally selected model. Pass `model`
+ *   explicitly to override (useful for tools with specific model requirements).
+ *
+ * @throws {Error} Propagates the error from `getActiveApiKey()` if no key is set.
+ *
+ * @example
+ * const model = createGeminiModel({ systemInstruction: MY_PROMPT });
+ * const result = await model.generateContent(userInput);
  */
 export function createGeminiModel(
     options: Omit<Parameters<GoogleGenerativeAI["getGenerativeModel"]>[0], "model"> &
     { model?: GeminiModelId } = {}
 ) {
-    const apiKey = getActiveApiKey(); // throws if missing
+    const apiKey = getActiveApiKey(); // throws if missing — by design
     const genAI = new GoogleGenerativeAI(apiKey);
     return genAI.getGenerativeModel({
         ...options,

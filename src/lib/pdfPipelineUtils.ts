@@ -1,15 +1,41 @@
+/**
+ * @file pdfPipelineUtils.ts
+ * @description Core processing logic for the Universal PDF Pipeline tool.
+ *
+ * ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ * ARCHITECTURE
+ *
+ * File type routing:
+ *  - .pdf              → in-browser merge via pdf-lib (zero network overhead)
+ *  - .jpg/.jpeg/.png   → embedded on an A4 page via pdf-lib (zero network overhead)
+ *  - .docx/.xlsx/.pptx/.txt → converted to PDF via ConvertAPI, then merged
+ *
+ * Key resolution follows the same BYOK pattern as gemini.ts:
+ *  localStorage (STORAGE_KEYS.convert.apiKey) → VITE_CONVERT_API_KEY env var → throw
+ * ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ */
+
 import { PDFDocument } from 'pdf-lib';
+import { STORAGE_KEYS } from '@/lib/storage';
 
 const ENV_API_KEY = import.meta.env.VITE_CONVERT_API_KEY || "";
 
 /**
- * Retrieves the active ConvertAPI key securely.
- * Prioritizes the user's local BYOK storage.
+ * Resolves the active ConvertAPI key.
+ *
+ * Resolution order (BYOK-first):
+ *  1. User-provided key stored at `STORAGE_KEYS.convert.apiKey` in localStorage.
+ *  2. `VITE_CONVERT_API_KEY` environment variable → fallback for local dev.
+ *
+ * @throws {Error} A user-friendly error if no key is configured.
+ *   Propagates to the component layer and is surfaced via Sonner toast.
+ *
+ * @returns The active ConvertAPI secret string
  */
 function getActiveConvertApiKey(): string {
     let customKey = "";
     try {
-        const stored = window.localStorage.getItem("lokrim_convert_key");
+        const stored = window.localStorage.getItem(STORAGE_KEYS.convert.apiKey);
         if (stored) {
             customKey = JSON.parse(stored);
         }
@@ -142,7 +168,25 @@ async function convertToPdfViaApi(
 }
 
 /**
- * Processes the ordered list of files, converting and merging them into one PDF.
+ * Processes an ordered list of pipeline files, converting each to PDF and
+ * merging them sequentially into a single output PDF.
+ *
+ * File processing is sequential (not parallel) to provide accurate per-file
+ * progress callbacks and to avoid overloading the ConvertAPI rate limit.
+ * On the first file error, the pipeline halts and re-throws the error.
+ *
+ * @param files - Ordered array of `PipelineFile` objects to process
+ * @param compressOutput - If true, sends the merged PDF back through ConvertAPI
+ *   for compression after merging. Requires a valid ConvertAPI key.
+ * @param onProgress - Callback invoked on each status change for a file.
+ *   Receives the file ID, new status, optional error message, and upload %.
+ *
+ * @throws {Error} From `getActiveConvertApiKey()` if Office files or compression
+ *   are requested but no key is configured.
+ * @throws {Error} From file processing, re-thrown after calling `onProgress`
+ *   with status `'error'`.
+ *
+ * @returns A `Uint8Array` of the final merged (and optionally compressed) PDF bytes
  */
 export async function processPdfPipeline(
     files: PipelineFile[],
