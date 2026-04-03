@@ -2,125 +2,271 @@
 
 A sleek, lightweight web application built for personal utility and knowledge management. Designed to run locally or be deployed via Firebase Hosting.
 
+---
+
 ## Features
 
-### 📝 Web to Obsidian Notes (Text to clean Markdown)
-A powerful tool designed specifically for knowledge hoarders and Obsidian users.
-- **Rich-Text Pasting**: Cmd+A / Copy an entire webpage, and simply paste it into the converter. It automatically parses the HTML, preserving all important hyperlinks (`[text](url)`) and image references (`![text](img)`).
-- **AI-Powered Structuring**: Uses your globally selected Gemini model to intelligently strip noisy web boilerplate (ads, menus, footers), add strict hierarchical formatting, and turn paragraphs into readable bullet points suitable for a personal knowledge vault.
-- **Local History**: Your last 3 conversions are stored securely in your browser's local storage so you can easily restore past notes.
-- **Regenerate Prompt**: Easily retry the AI generation with a single click if the structure isn't perfect.
+### Web to Obsidian Notes
 
-### 🧠 Master Prompt Generator
-Transform rough, informal ideas into highly detailed, professional AI prompts.
-- **Dynamic Configuration**: Provide a target persona (e.g. *Senior Auth Engineer*) and an optional specialized field (e.g. *Cybersecurity*) to perfectly contextualize the LLM.
-- **AI-Engineered Generation**: Takes your raw bullet points/idea and expands them into a clean, strictly formatted Markdown prompt that automatically establishes role, context, task requirements, and constraints.
-- **Frictionless Workflow**: One-click copy directly to your clipboard, formatted strictly as raw text to prevent nested markdown codeblock errors when pasting into other LLMs.
+A tool designed for knowledge hoarders and Obsidian users who want to capture web content cleanly.
 
-### 📄 Universal PDF Pipeline
-Merge diverse file formats into a single, perfectly ordered PDF document.
-- **Hybrid Processing**: Intelligently processes Native PDFs and Images (`.png`, `.jpg`) completely locally in your browser using `pdf-lib` for zero network overhead.
-- **Office Document Support**: Securely routes Word (`.docx`), Excel (`.xlsx`), PowerPoint (`.pptx`), and Text (`.txt`) files through ConvertAPI for pristine PDF rendering before merging.
-- **Drag & Drop Reordering**: Fluidly sort your pipeline array using a modern drag-and-drop interface powered by `@hello-pangea/dnd`.
-
-### 🗺️ GeoJSON Validator & Quick Mapper
-Instantly visualize, validate, and extract coordinates from GeoJSON data.
-- **Live Parsing & Validation**: Paste or drag-and-drop your `.json` files. The built-in editor validates syntax on the fly and provides precise error badges if your JSON is uniquely malformed.
-- **Interactive Mapping**: Automatically fits the map to your valid geometry bounds. Choose between OSM Standard, CartoDB Positron, or CartoDB Dark Matter tile layers—all strictly adhering to the global dark mode toggle.
-- **Right-Click Extraction**: Right-click anywhere on the map to spawn a secure copying popup that extracts the exact `lat, long` coordinates directly to your clipboard.
-
-### ✍️ Scribe to Vault (Handwritten PDF → Markdown)
-A multi-pass AI pipeline that turns scanned handwritten notes into a single, clean, vault-ready `.md` file.
-- **Multi-Pass Architecture**: Pass 1 runs a strict verbatim OCR across the PDF (chunked into 8-page batches for large documents). Pass 2 converts the raw transcript into structured GFM Markdown. A repeatable **Polish Further** pass performs deep structural refinement (headings, tables, definitions, diagram callouts). A separate repeatable **Expand Notes** pass enriches the document by adding definitions, worked examples, real-world context, and key caveats for any sparse or bare-label content — all without touching the original text.
-- **Smart Chunking**: PDFs over 7 pages are automatically split into 8-page OCR batches, processed sequentially, and stitched before the polish pass — preventing token-limit truncation on large documents.
-- **Detailed Formatting**: Hand-drawn grids become valid GFM tables; diagrams become rich Obsidian `[!abstract]` callout placeholders with vivid descriptions suitable for later image generation.
-- **Editable Output**: The final Markdown is displayed in an editable textarea. Rename the file before downloading — the filename is auto-derived from the document's H1 heading. Download as a single `.md` file with one click.
-
-### 🔑 Bring Your Own Key (BYOK) Architecture
-No backend user authentication is required to manage API credits or subscriptions.
-Click the **Settings** menu in the bottom-left sidebar to:
-- Paste your own **Google Gemini API Key** (from [Google AI Studio](https://aistudio.google.com/)).
-- Select your preferred **Gemini model** from the registry (Gemini 2.5 Flash, 2.5 Pro, 3 Flash, etc.). All AI-powered tools automatically use whichever model is selected.
-- Paste your **ConvertAPI Secret** (required only for the PDF Pipeline's Office document support).
-
-Keys are stored safely in your browser's `localStorage` and are never sent anywhere except directly to their respective providers. All tools share a single `createGeminiModel()` factory in `src/lib/gemini.ts`, so switching models in Settings instantly applies across every tool.
+- **Rich-Text Pasting**: Copy an entire webpage (`Cmd+A` then `Cmd+C`) and paste it directly into the converter. The tool automatically parses the HTML via Turndown, preserving all important hyperlinks (`[text](url)`) and image references (`![alt](url)`) rather than stripping them.
+- **AI-Powered Structuring**: Uses the globally selected Gemini model to strip noisy web boilerplate (ads, navbars, footers, cookie banners), apply strict hierarchical Markdown formatting, and convert dense paragraphs into readable bullet points suitable for a personal knowledge vault.
+- **Local History**: The last 30 conversions are stored in the browser's local storage so you can easily restore any past session.
+- **Regenerate**: Retry AI generation with a single click if the initial structure isn't to your liking.
 
 ---
 
-## 🚀 Live Demo & Usage
+### Master Prompt Generator
 
-**The application is live and completely free to use!** 
-Try it here: [https://lokrim-toolkit.web.app](https://lokrim-toolkit.web.app)
+Transforms a rough idea — even a single sentence — into a long, structured, immediately-usable master prompt tailored to any AI model or workflow type.
 
-### How to use the Web to Obsidian Converter:
-1. Navigate to the live link above and click **Settings** (bottom left).
-2. Paste your own free **Gemini API Key** (from [Google AI Studio](https://aistudio.google.com/)). This key is securely stored in your browser's local storage and is never saved to any outer server.
-3. Click on the **Web to Obsidian** tool.
-4. Go to any messy, ad-filled web article and copy exactly what you want (e.g. `Cmd+A` -> `Cmd+C`).
-5. Paste it into the "Raw Article / Text" box. The tool automatically detects Rich-Text HTML and prepares the links and images. 
-6. Click **Structure for Obsidian** and let AI convert it into a perfectly formatted, hierarchical Markdown note.
-7. Click **Copy** and paste it directly into your Obsidian Vault!
+- **Intelligent Input Set**: Configure four parameters — Persona/Role, Domain/Context (optional), Target LLM, and Prompt Type — giving the generator precise context to build around.
+- **Target LLM Awareness**: The generator adapts its output syntax to the selected model: XML tags for Claude, numbered markdown directives for GPT-4o, weighted descriptor syntax for Stable Diffusion/Flux, `/imagine` parameters for Midjourney, and structured action-observation loops for Agentic Development Environments.
+- **Prompt Types**: Choose from System Prompt, User Task, Agent Task, Chain-of-Thought, Code Generation, Image/Art Generation, Agentic Development Environment, Roleplay/Persona, or Data Extraction/Analysis. Each type maps to a distinct structural template.
+- **Idea Expansion**: If the rough idea is sparse (under ~30 words), the generator autonomously invents a complete expert-level methodology constrained by the persona and domain, filling every section substantively. Nothing is left as a placeholder.
+- **Length and Innovation**: Targets 600–1200 words per generated prompt. Introduces at least 2–3 domain-specific expert insights the user did not specify.
+- **Refine Loop**: After generation, a Refine strip appears below the output. Enter feedback (e.g. "add few-shot examples", "make it more concise", "add error handling") and hit Refine. A dedicated refinement system prompt applies changes surgically without altering the rest of the prompt. A badge tracks how many refinement passes have been applied.
+- **Prompt History**: All generated sessions (up to 20) are persisted in local storage. The collapsible History panel in the header shows each entry with persona, domain, LLM, type, and rough idea preview. Clicking any entry fully restores all input fields and the output.
+- **Download**: Export the generated prompt as a `.txt` file named after the persona.
 
 ---
 
-## 🛠 Developer Guide: Scalability & Theming
+### Universal PDF Pipeline
 
-The application is built to be easily expanded with new minimal tools while maintaining a strict consistency in design.
+Merges diverse file formats into a single, perfectly ordered PDF document.
+
+- **Hybrid Processing**: Native PDFs and images (`.png`, `.jpg`, `.webp`) are processed entirely in-browser using `pdf-lib` — zero network overhead, maximum privacy.
+- **Office Document Support**: Word (`.docx`), Excel (`.xlsx`), PowerPoint (`.pptx`), and plain text (`.txt`) files are routed through ConvertAPI for pristine PDF rendering before merging. Requires a ConvertAPI Secret (configurable in Settings).
+- **Drag and Drop Reordering**: Sort the pipeline array in any order using a drag-and-drop interface powered by `@hello-pangea/dnd`.
+
+---
+
+### GeoJSON Validator and Quick Mapper
+
+Instantly visualises, validates, and extracts coordinates from GeoJSON data.
+
+- **Live Parsing and Validation**: Paste or drag-and-drop `.json` files. The built-in editor validates syntax on the fly with precise error badges if the JSON is malformed.
+- **Interactive Mapping**: Automatically fits the map view to the geometry bounds. Choose between OSM Standard, CartoDB Positron, or CartoDB Dark Matter tile layers, all responding to the global dark mode toggle.
+- **Right-Click Coordinate Extraction**: Right-click anywhere on the map to open a popup that extracts the exact `lat, lng` to the clipboard.
+
+---
+
+### Scribe to Vault
+
+A multi-pass AI pipeline that turns scanned handwritten PDFs into a single, clean, vault-ready `.md` file.
+
+- **Multi-Pass Architecture**:
+  - **Pass 1 — OCR**: Strict verbatim extraction of every word, table, and diagram from the PDF. PDFs over 7 pages are automatically chunked into 8-page batches, processed sequentially to avoid token-limit truncation, and stitched before the next pass.
+  - **Pass 2 — Polish**: Converts the raw OCR transcript into structured GitHub-Flavored Markdown — an H1 title, hierarchical headings, proper GFM tables, and Obsidian `[!abstract]` callout placeholders with vivid diagram descriptions.
+  - **Pass 3+ — Polish Further** (repeatable): A deep structural refinement pass that audits heading hierarchy, merges duplicates, perfects tables, improves definition clarity, and expands diagram callouts.
+  - **Pass 4+ — Expand Notes** (repeatable): Enriches the document by adding definitions, worked examples with real values, real-world context callouts, and key caveats for any sparse or bare-label content — all without altering the original text.
+- **Editable Output**: The final Markdown is displayed in an editable textarea. Rename the file before downloading (auto-derived from the H1 heading). Download as a `.md` file with one click.
+
+---
+
+### Bring Your Own Key (BYOK) Architecture
+
+No backend user authentication is required to manage API credits or subscriptions. Click **Settings** in the bottom-left sidebar to:
+
+- Paste your **Google Gemini API Key** (from [Google AI Studio](https://aistudio.google.com/)).
+- Select your preferred **Gemini model** from the registry. All AI-powered tools automatically use whichever model is active. Available models: Gemini 3 Flash (default), Gemini 3.1 Flash Lite, Gemini 3.1 Pro, Gemini 2.5 Flash, Gemini 2.5 Pro.
+- Paste your **ConvertAPI Secret** (required only for Office document conversion in the PDF Pipeline).
+
+Keys are stored exclusively in the browser's `localStorage` and are never sent anywhere except directly to their respective providers.
+
+---
+
+## Live Demo
+
+The application is live and free to use: [https://lokrim-toolkit.web.app](https://lokrim-toolkit.web.app)
+
+### Quick Start
+
+1. Open the app and click **Settings** (bottom-left sidebar).
+2. Paste your **Gemini API Key** from [Google AI Studio](https://aistudio.google.com/). It is stored only in your browser.
+3. Select a **Gemini model** from the Model dropdown in Settings. Gemini 3 Flash is the default; use the lite model for Scribe to Vault for best OCR results.
+4. Pick any tool from the sidebar and start using it.
+
+---
+
+## Developer Guide
+
+### Project Architecture
+
+The application is built for maximum scalability — adding a new tool requires touching only three files and creating one new component.
+
+```
+src/
+  App.tsx              — Top-level router (auto-generates routes from toolsConfig)
+  toolsConfig.ts       — Single source of truth for all tool registrations
+  lib/
+    gemini.ts          — Shared AI factory: model registry, BYOK key resolution, createGeminiModel()
+  hooks/
+    useLocalStorage.ts — Shared localStorage hook for persistent state
+  pages/
+    Home.tsx           — Dashboard
+    tools/
+      MarkdownConverter.tsx   — Web to Obsidian Notes tool
+      PromptGenerator.tsx     — Master Prompt Generator tool
+      PdfPipeline.tsx         — Universal PDF Pipeline tool
+      GeoJsonViewer.tsx       — GeoJSON Validator & Mapper tool
+      ScribeToVault.tsx       — Scribe to Vault tool
+  components/
+    ui/                — shadcn/ui component library
+  layouts/
+    DashboardLayout.tsx — Sidebar + content shell (auto-generates nav from toolsConfig)
+```
+
+### Shared Libraries
+
+Only infrastructure that is genuinely shared across multiple tools belongs in shared files. The rule is: **if it is only used by one tool, it lives in that tool's file.**
+
+#### `src/lib/gemini.ts`
+
+Responsible for three things only:
+
+1. **Model Registry** (`GEMINI_MODELS`, `DEFAULT_GEMINI_MODEL`, `GeminiModelId`) — the authoritative list of available Gemini models. Adding a model here automatically makes it appear in the Settings modal dropdown.
+2. **API Key Resolution** (`getActiveApiKey()`) — reads the BYOK key from `localStorage`, falls back to `VITE_GEMINI_API_KEY`, and throws a user-friendly error if neither is present.
+3. **Model Factory** (`createGeminiModel(options?)`) — convenience function that combines the active key and the selected model into a ready-to-use `GenerativeModel` instance.
+
+Everything else — system prompts, generation configs, temperature values — belongs in the tool file that uses them.
+
+#### `src/hooks/useLocalStorage.ts`
+
+A typed React hook for reading and writing to `localStorage` with automatic JSON serialisation. Used by tools that need persistent state (e.g. Web to Obsidian history). Import it in any tool that needs local persistence.
 
 ### Adding a New Tool
-We use a scalable routing and sidebar architecture driven by a single config file (`src/toolsConfig.ts`). You do not need to manually touch `App.tsx` routing or `DashboardLayout.tsx` sidebars to add a layout.
 
-1. **Build Component**: Create your new React component tool inside `src/pages/tools/YourTool.tsx`.
-2. **Register Tool**: Open `src/toolsConfig.ts`, import your component and a Lucide icon, and add a new object to the `toolsConfig` array. The app automatically generates the route and the sidebar link!
-3. **Update Dashboard**: Open `src/pages/Home.tsx` and add a new description block for your tool within the scrollable "Available Tools" grid section so users know what it does.
-4. **Update Documentation**: Always update this `README.md` file to reflect the new feature in the main `Features` list.
+Follow these four steps exactly:
 
-### Architecture & Privacy Rules
-- **Bring Your Own Key (BYOK)**: If your new tool requires external APIs, do NOT hardcode API keys or require a backend user-authentication system. Instead, add a new input to the `SettingsModal.tsx` and securely persist the user's private key into their browser's `localStorage` (just like the existing Gemini and ConvertAPI implementations). This guarantees the user's API quota remains private and the application can remain a statically hosted SPA.
+**Step 1 — Build the tool component**
 
-### Theme Rules for Consistency
-To maintain the premium dark/light mode experience:
-- **Rule 1**: NEVER write raw CSS rules for elements (e.g. `button {}`) in `index.css`. This breaks Tailwind's class application.
-- **Rule 2**: NEVER use inline react `<div style={{ backgroundColor: 'white' }}>` overrides. 
-- **Rule 3**: ALWAYS rely purely on Tailwind's `dark:` variant classes directly on your elements (e.g. `className="bg-zinc-50 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-50"`). This guarantees your new tool will natively support the global theme toggle.
+Create `src/pages/tools/YourTool.tsx`. Keep the component fully self-contained:
+
+```tsx
+// src/pages/tools/YourTool.tsx
+
+import { createGeminiModel } from "@/lib/gemini";
+
+// Define all system prompts as constants at the top of this file.
+// Do NOT move prompts into gemini.ts — they are tool-specific.
+const MY_SYSTEM_PROMPT = `You are a ...`;
+
+// Define all input-building functions in this file.
+function buildInput(userText: string): string {
+  return `Do the thing with: ${userText}`;
+}
+
+// If you need localStorage persistence, use the shared hook.
+// import { useLocalStorage } from "@/hooks/useLocalStorage";
+
+export default function YourTool() {
+  // All state, handlers, and UI logic live here.
+  // Call createGeminiModel({ systemInstruction: MY_SYSTEM_PROMPT }) inside handlers.
+  return <div>...</div>;
+}
+```
+
+Key rules for tool files:
+- All Gemini system prompts and `generationConfig` values are defined as constants in the tool file.
+- Call `createGeminiModel()` inside async handlers (not at module level) so the API key is resolved at call time.
+- Use `crypto.randomUUID()` for IDs — no new dependencies needed.
+- Only import from `@/lib/gemini` what you actually use: typically just `createGeminiModel`.
+- If your tool needs local history, use `useLocalStorage` from `@/hooks/useLocalStorage`.
+- If your tool requires a new third-party API key, add a new input to `src/components/SettingsModal.tsx` and persist it to `localStorage`. Never hardcode credentials.
+
+**Step 2 — Register the tool**
+
+Open `src/toolsConfig.ts` and add one entry to the `toolsConfig` array. The router and sidebar are generated automatically from this array:
+
+```ts
+import YourTool from "@/pages/tools/YourTool";
+import { YourIcon } from "lucide-react";
+
+// Add to the toolsConfig array:
+{
+  id: "your-tool",
+  label: "Your Tool Name",
+  path: "/tools/your-tool",
+  component: YourTool,
+  icon: YourIcon,
+},
+```
+
+**Step 3 — Update the dashboard**
+
+Open `src/pages/Home.tsx` and add a description block for your tool inside the Available Tools scrollable list:
+
+```tsx
+<div className="space-y-1">
+  <strong className="text-zinc-900 dark:text-zinc-100 text-sm">Your Tool Name</strong>
+  <p className="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed">
+    What it does and why it is useful.
+  </p>
+</div>
+```
+
+**Step 4 — Update documentation**
+
+Add a section to this `README.md` under Features describing the new tool and its capabilities.
 
 ---
 
-## Developer Installation & Setup
+### Theme and Styling Rules
 
-Want to run it locally or contribute?
+To maintain the dark/light mode experience across all tools:
 
-1. **Clone the repository and install dependencies:**
+- **Never** write raw CSS element rules (e.g. `button {}`) in `index.css`. This overrides Tailwind class application.
+- **Never** use inline React `style={{}}` overrides.
+- **Always** use Tailwind's `dark:` variant classes directly on elements (e.g. `className="bg-zinc-50 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-50"`).
+- Follow the existing zinc colour palette for neutral UI and purple (`dark:bg-purple-600`) for primary actions in dark mode.
+
+---
+
+## Developer Installation
+
 ```bash
+# Clone and install dependencies
 npm install
-```
 
-2. **Environment Variables (Optional):**
-You can provide default fallback API keys in a `.env` file at the root of the project:
-```env
-VITE_GEMINI_API_KEY="your_gemini_key_here"
-VITE_CONVERT_API_KEY="your_convertapi_secret_here"
-```
+# Optional: create a .env file for local fallback API keys
+# VITE_GEMINI_API_KEY="your_gemini_key_here"
+# VITE_CONVERT_API_KEY="your_convertapi_secret_here"
 
-3. **Run the development server:**
-```bash
+# Start the development server
 npm run dev
 ```
 
+---
+
 ## Deployment (Firebase CI/CD)
 
-The project is fully configured as a Single Page Application (SPA) for Firebase Hosting with GitHub Actions.
+The project is fully configured as a Single Page Application for Firebase Hosting with GitHub Actions.
 
-- Any push to the `main` branch automatically triggers the `.github/workflows/firebase-hosting-merge.yml` action.
-- This action installs dependencies, builds the Vite production bundle, and securely deploys the updated `dist` folder to Firebase Hosting.
+- Any push to the `main` branch automatically triggers `.github/workflows/firebase-hosting-merge.yml`.
+- The action installs dependencies, builds the Vite production bundle, and deploys the `dist` folder to Firebase Hosting.
+
+---
 
 ## Tech Stack
-- **Framework**: React + Vite + TypeScript
-- **Styling**: Tailwind CSS v4
-- **Components**: `shadcn/ui` (Radix UI) + Lucide React icons
-- **AI**: `@google/generative-ai` SDK — all tools share `createGeminiModel()` from `src/lib/gemini.ts`
-- **PDF Processing**: `pdf-lib` (local PDF creation, merging, and chunking)
-- **Utilities**: `turndown` (HTML→Markdown parsing), `react-router-dom` (navigation), `sonner` (toasts), `@hello-pangea/dnd` + `react-dropzone` (drag-and-drop), `ConvertAPI` (Office document conversion)
+
+| Layer | Technology |
+|---|---|
+| Framework | React + Vite + TypeScript |
+| Styling | Tailwind CSS v4 |
+| Components | shadcn/ui (Radix UI) + Lucide React icons |
+| AI | `@google/generative-ai` SDK — `createGeminiModel()` in `src/lib/gemini.ts` |
+| PDF Processing | `pdf-lib` (in-browser PDF creation, merging, chunking) |
+| HTML Parsing | `turndown` (HTML to Markdown conversion) |
+| Navigation | `react-router-dom` |
+| Notifications | `sonner` |
+| Drag and Drop | `@hello-pangea/dnd` + `react-dropzone` |
+| Office Conversion | ConvertAPI |
+| Maps | Leaflet + React-Leaflet |
+
+---
 
 ## License
+
 MIT

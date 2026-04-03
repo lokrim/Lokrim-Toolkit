@@ -21,45 +21,45 @@ const TARGET_LLM_GROUPS: Array<{
     label: string;
     options: Array<{ value: string; label: string }>;
 }> = [
-    {
-        label: "OpenAI",
-        options: [
-            { value: "gpt-4o", label: "GPT-4o" },
-            { value: "gpt-4o-mini", label: "GPT-4o mini" },
-        ],
-    },
-    {
-        label: "Anthropic",
-        options: [
-            { value: "claude-3.5-sonnet", label: "Claude 3.5 Sonnet" },
-            { value: "claude-3-haiku", label: "Claude 3 Haiku" },
-        ],
-    },
-    {
-        label: "Google",
-        options: [
-            { value: "gemini-pro", label: "Gemini Pro" },
-            { value: "gemini-flash", label: "Gemini Flash" },
-        ],
-    },
-    {
-        label: "Open Source",
-        options: [
-            { value: "llama-3", label: "Llama 3 (Meta)" },
-            { value: "mistral-large", label: "Mistral Large" },
-        ],
-    },
-    {
-        label: "Image Generation",
-        options: [
-            { value: "gemini-image", label: "Gemini (Image Generation)" },
-            { value: "chatgpt-image", label: "ChatGPT (Image Generation)" },
-            { value: "midjourney-v6", label: "Midjourney v6" },
-            { value: "stable-diffusion-xl", label: "Stable Diffusion XL" },
-            { value: "flux-1", label: "Flux.1" },
-        ],
-    },
-];
+        {
+            label: "OpenAI",
+            options: [
+                { value: "gpt-4o", label: "GPT-4o" },
+                { value: "gpt-4o-mini", label: "GPT-4o mini" },
+            ],
+        },
+        {
+            label: "Anthropic",
+            options: [
+                { value: "claude-3.5-sonnet", label: "Claude 3.5 Sonnet" },
+                { value: "claude-3-haiku", label: "Claude 3 Haiku" },
+            ],
+        },
+        {
+            label: "Google",
+            options: [
+                { value: "gemini-pro", label: "Gemini Pro" },
+                { value: "gemini-flash", label: "Gemini Flash" },
+            ],
+        },
+        {
+            label: "Open Source",
+            options: [
+                { value: "llama-3", label: "Llama 3 (Meta)" },
+                { value: "mistral-large", label: "Mistral Large" },
+            ],
+        },
+        {
+            label: "Image Generation",
+            options: [
+                { value: "gemini-image", label: "Nanobanana (Image Generation)" },
+                { value: "chatgpt-image", label: "ChatGPT (Image Generation)" },
+                { value: "midjourney-v6", label: "Midjourney v6" },
+                { value: "stable-diffusion-xl", label: "Stable Diffusion XL" },
+                { value: "flux-1", label: "Flux.1" },
+            ],
+        },
+    ];
 
 const PROMPT_TYPE_OPTIONS: Array<{ value: string; label: string }> = [
     { value: "system-prompt", label: "System Prompt" },
@@ -488,11 +488,10 @@ export default function PromptGenerator() {
                     </div>
                     <button
                         onClick={() => setShowHistory((s) => !s)}
-                        className={`flex items-center gap-1.5 text-sm font-medium px-3 py-2 rounded-lg transition-colors border shrink-0 ${
-                            showHistory
+                        className={`flex items-center gap-1.5 text-sm font-medium px-3 py-2 rounded-lg transition-colors border shrink-0 ${showHistory
                                 ? "border-purple-300 dark:border-purple-700 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300"
                                 : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800"
-                        }`}
+                            }`}
                     >
                         <History className="h-4 w-4" />
                         <span>History</span>
