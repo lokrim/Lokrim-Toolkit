@@ -65,11 +65,25 @@ A multi-pass AI pipeline that turns scanned handwritten PDFs into a single, clea
 
 ---
 
+### Flavour Forge
+
+A sophisticated, multi-pass recipe generator that turns your pantry into gourmet meals tailored precisely to your kitchen constraints.
+
+- **Kitchen Profile Persistence**: Your heat sources (e.g. Stove, Air Fryer), utensils, and global cuisine preferences are cached automatically, making subsequent visits frictionless.
+- **Pass 1 — Culinary Scouting**: Generates a grid of 3-4 mouthwatering dish concepts specifically adapting to your available ingredients and effort-limits. Each concept displays estimated calories and a visual "Ingredient Match %" so you know exactly what requires a grocery run.
+- **Pass 2 — Detailed Forging**: Expanding a concept triggers the second AI pass.
+  - Generates an on-the-fly, stylized representation of the final dish using Pollinations.ai, embedded at the top of the recipe.
+  - Dynamically extracts macro-nutrient targets mapped into an elegant, custom-coloured ratio bar (Protein, Carbs, Fat) alongside an exact calorie tally.
+  - Formats instructions using a clean, readable Markdown renderer, providing perfectly structured procedures and expert Chef Tips.
+
+---
+
 ### Bring Your Own Key (BYOK) Architecture
 
 No backend user authentication is required to manage API credits or subscriptions. Click **Settings** in the bottom-left sidebar to:
 
 - Paste your **Google Gemini API Key** (from [Google AI Studio](https://aistudio.google.com/)).
+- Paste your **Pollinations API Key** (from [Pollinations AI](https://enter.pollinations.ai/)) required explicitly for the Flavour Forge image generation step.
 - Select your preferred **Gemini model** from the registry. All AI-powered tools automatically use whichever model is active. Available models: Gemini 3 Flash (default), Gemini 3.1 Flash Lite, Gemini 3.1 Pro, Gemini 2.5 Flash, Gemini 2.5 Pro.
 - Paste your **ConvertAPI Secret** (required only for Office document conversion in the PDF Pipeline).
 
@@ -131,9 +145,9 @@ Only infrastructure that is genuinely shared across multiple tools belongs in `s
 #### `src/lib/gemini.ts`
 
 Three responsibilities only:
-1. **Model Registry** (`GEMINI_MODELS`, `DEFAULT_GEMINI_MODEL`, `GeminiModelId`) — add a new model here to make it appear in the Settings modal.
+1. **Model Registry** (`GEMINI_MODELS`, `DEFAULT_GEMINI_MODEL`, `GEMINI_IMAGE_MODELS` etc) — add new models here to make them appear in the Settings modal.
 2. **API Key Resolution** (`getActiveApiKey()`) — reads the BYOK key from `localStorage` via `STORAGE_KEYS`, falls back to `VITE_GEMINI_API_KEY`, throws a user-friendly error if neither is present.
-3. **Model Factory** (`createGeminiModel(options?)`) — combines the active key and selected model into a ready-to-use `GenerativeModel`.
+3. **Model Factory** (`createGeminiModel(options?)` and `createGeminiImageClient()`) — combines the active key and selected model into a ready-to-use client.
 
 #### `src/lib/storage.ts`
 
@@ -185,14 +199,14 @@ Key rules for prompt files:
 
 **Step 2 — Create an AI hook** *(AI tools only)*
 
-Create `src/hooks/useYourTool.ts`. Import your prompts from Step 1 and `createGeminiModel` from `@/lib/gemini`. All async AI calls, `useState`, and `localStorage` reads/writes go here.
+Create `src/hooks/useYourTool.ts`. Import your prompts from Step 1 and `createGeminiModel` (or `createGeminiImageClient` from `@google/genai` if generating images) from `@/lib/gemini`. All async AI calls, `useState`, and `localStorage` reads/writes go here.
 
 ```ts
 // src/hooks/useYourTool.ts
 
 import { useState } from "react";
 import { toast } from "sonner";
-import { createGeminiModel } from "@/lib/gemini";
+import { createGeminiModel, createGeminiImageClient, getActiveGeminiImageModel } from "@/lib/gemini";
 import { STORAGE_KEYS } from "@/lib/storage";
 import { MY_SYSTEM_PROMPT, buildInput } from "@/lib/prompts/yourTool";
 
@@ -209,6 +223,16 @@ export function useYourTool() {
             });
             const result = await model.generateContent(buildInput(userText));
             setOutput(result.response.text());
+            
+            // Example of Image Generation
+            // const ai = createGeminiImageClient();
+            // const imgResult = await ai.models.generateImages({
+            //     model: getActiveGeminiImageModel(),
+            //     prompt: "Robot holding a red skateboard",
+            //     config: { numberOfImages: 1 }
+            // });
+            // const imageBase64 = imgResult.generatedImages[0].image.imageBytes;
+
             toast.success("Done!");
         } catch (err: unknown) {
             // getActiveApiKey() throws a user-friendly Error if no key is configured.
