@@ -36,8 +36,30 @@ export const GEMINI_MODELS = [
 ] as const;
 
 export type GeminiModelId = typeof GEMINI_MODELS[number]["id"];
-
 export const DEFAULT_GEMINI_MODEL: GeminiModelId = "gemini-3-flash-preview";
+
+export const GEMINI_IMAGE_MODELS = [
+    { id: "imagen-4.0-generate-001", label: "Imagen 4 Generate (default)" },
+    { id: "imagen-4.0-ultra-generate-001", label: "Imagen 4 Ultra" },
+    { id: "imagen-4.0-fast-generate-001", label: "Imagen 4 Fast" },
+] as const;
+
+export type GeminiImageModelId = typeof GEMINI_IMAGE_MODELS[number]["id"];
+export const DEFAULT_GEMINI_IMAGE_MODEL: GeminiImageModelId = "imagen-4.0-generate-001";
+
+// ---------------------------------------------------------------------------
+// Pollinations Model Registry
+// ---------------------------------------------------------------------------
+export const POLLINATIONS_IMAGE_MODELS = [
+    { id: "flux", label: "Flux Schnell (Fast & High Quality)" },
+    { id: "zimage", label: "Z-Image Turbo" },
+    { id: "wan-image", label: "Wan 2.7 Image" },
+    { id: "gptimage", label: "GPT Image 1 Mini" },
+    { id: "nova-canvas", label: "Amazon Nova Canvas" }
+] as const;
+
+export type PollinationsImageModelId = typeof POLLINATIONS_IMAGE_MODELS[number]["id"];
+export const DEFAULT_POLLINATIONS_IMAGE_MODEL: PollinationsImageModelId = "flux";
 
 // ---------------------------------------------------------------------------
 // Shared helpers — used by every AI-powered tool
@@ -66,6 +88,32 @@ export function getActiveGeminiModel(): GeminiModelId {
         }
     } catch { /* Ignore — fall through to default */ }
     return DEFAULT_GEMINI_MODEL;
+}
+
+export function getActiveGeminiImageModel(): GeminiImageModelId {
+    try {
+        const stored = window.localStorage.getItem(STORAGE_KEYS.gemini.imageModel);
+        if (stored) {
+            const parsed = JSON.parse(stored) as string;
+            if (GEMINI_IMAGE_MODELS.some((m) => m.id === parsed)) {
+                return parsed as GeminiImageModelId;
+            }
+        }
+    } catch { /* Ignore */ }
+    return DEFAULT_GEMINI_IMAGE_MODEL;
+}
+
+export function getActivePollinationsImageModel(): PollinationsImageModelId {
+    try {
+        const stored = window.localStorage.getItem(STORAGE_KEYS.pollinations.imageModel);
+        if (stored) {
+            const parsed = JSON.parse(stored) as string;
+            if (POLLINATIONS_IMAGE_MODELS.some((m) => m.id === parsed)) {
+                return parsed as PollinationsImageModelId;
+            }
+        }
+    } catch { /* Ignore */ }
+    return DEFAULT_POLLINATIONS_IMAGE_MODEL;
 }
 
 /**
@@ -101,6 +149,23 @@ export function getActiveApiKey(): string {
     return activeKey;
 }
 
+export function getActivePollinationsApiKey(): string {
+    let customKey = "";
+    try {
+        const stored = window.localStorage.getItem(STORAGE_KEYS.pollinations.apiKey);
+        if (stored) customKey = JSON.parse(stored);
+    } catch (e) {
+        console.error("Failed to parse stored Pollinations API key:", e);
+    }
+    const activeKey = customKey || (import.meta.env.VITE_POLLINATIONS_API_KEY ?? "");
+    if (!activeKey) {
+        throw new Error(
+            "Pollinations API key is not configured. Please add it in Settings or set VITE_POLLINATIONS_API_KEY."
+        );
+    }
+    return activeKey;
+}
+
 /**
  * Convenience factory used by tools to get a ready-to-use `GenerativeModel`.
  *
@@ -129,3 +194,5 @@ export function createGeminiModel(
         model: options.model ?? getActiveGeminiModel(),
     });
 }
+
+

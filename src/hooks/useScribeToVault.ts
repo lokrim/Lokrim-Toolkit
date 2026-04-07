@@ -22,7 +22,7 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { PDFDocument, type PDFPage } from "pdf-lib";
-import { createGeminiModel } from "@/lib/gemini";
+import { createGeminiModel } from "@/lib/models";
 import {
     OCR_SYSTEM_PROMPT,
     POLISH_SYSTEM_PROMPT,

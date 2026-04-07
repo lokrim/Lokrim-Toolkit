@@ -38,6 +38,7 @@ export const STORAGE_KEYS = {
     gemini: {
         apiKey: "lokrim_gemini_key",
         model:  "lokrim_gemini_model",
+        imageModel: "lokrim_gemini_image_model",
     },
     /** ConvertAPI secret — used only by the Universal PDF Pipeline. */
     convert: {
@@ -50,5 +51,15 @@ export const STORAGE_KEYS = {
     /** Web to Obsidian conversion history (max 30 entries). */
     markdownConverter: {
         history: "lokrim_markdown_history",
+    },
+    /** Flavour Forge kitchen defaults and session history. */
+    flavourForge: {
+        history: "lokrim_flavour_forge_history",
+        defaults: "lokrim_flavour_forge_defaults",
+    },
+    /** Pollinations API key and model selection. */
+    pollinations: {
+        apiKey: "lokrim_pollinations_key",
+        imageModel: "lokrim_pollinations_image_model",
     },
 } as const;

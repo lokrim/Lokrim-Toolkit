@@ -12,7 +12,7 @@
 
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { createGeminiModel } from "@/lib/gemini";
+import { createGeminiModel } from "@/lib/models";
 import { STORAGE_KEYS } from "@/lib/storage";
 import {
     GENERATE_SYSTEM_PROMPT,

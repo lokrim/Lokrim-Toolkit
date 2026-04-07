@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Copy, Loader2, FileCheck2, RefreshCw, Clock, ChevronRight } from "lucide-react";
-import { createGeminiModel } from "@/lib/gemini";
+import { createGeminiModel } from "@/lib/models";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";

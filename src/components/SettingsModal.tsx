@@ -20,7 +20,10 @@ import {
 import { Settings, Key, FileJson, Bot } from "lucide-react";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { toast } from "sonner";
-import { GEMINI_MODELS, DEFAULT_GEMINI_MODEL, type GeminiModelId } from "@/lib/gemini";
+import { 
+    GEMINI_MODELS, DEFAULT_GEMINI_MODEL, type GeminiModelId, 
+    POLLINATIONS_IMAGE_MODELS, DEFAULT_POLLINATIONS_IMAGE_MODEL, type PollinationsImageModelId 
+} from "@/lib/models";
 import { STORAGE_KEYS } from "@/lib/storage";
 
 export default function SettingsModal() {
@@ -31,12 +34,25 @@ export default function SettingsModal() {
         DEFAULT_GEMINI_MODEL
     );
 
+    const [pollinationsKey, setPollinationsKey] = useLocalStorage<string>(STORAGE_KEYS.pollinations.apiKey, "");
+    
+    const [pollinationsImageModel, setPollinationsImageModel] = useLocalStorage<PollinationsImageModelId>(
+        STORAGE_KEYS.pollinations.imageModel,
+        DEFAULT_POLLINATIONS_IMAGE_MODEL
+    );
+
     const [tempGemini, setTempGemini] = React.useState(geminiKey);
     const [tempConvert, setTempConvert] = React.useState(convertKey);
+    const [tempPollinations, setTempPollinations] = React.useState(pollinationsKey);
     const resolvedModel = (GEMINI_MODELS.some((m) => m.id === geminiModel)
         ? geminiModel
         : DEFAULT_GEMINI_MODEL) as GeminiModelId;
     const [tempModel, setTempModel] = React.useState<GeminiModelId>(resolvedModel);
+
+    const resolvedImageModel = (POLLINATIONS_IMAGE_MODELS.some((m) => m.id === pollinationsImageModel)
+        ? pollinationsImageModel
+        : DEFAULT_POLLINATIONS_IMAGE_MODEL) as PollinationsImageModelId;
+    const [tempImageModel, setTempImageModel] = React.useState<PollinationsImageModelId>(resolvedImageModel);
 
     const [isOpen, setIsOpen] = React.useState(false);
 
@@ -45,18 +61,26 @@ export default function SettingsModal() {
         if (isOpen) {
             setTempGemini(geminiKey);
             setTempConvert(convertKey);
+            setTempPollinations(pollinationsKey);
             // Re-validate on every open in case registry changed since last render
             const valid = GEMINI_MODELS.some((m) => m.id === geminiModel)
                 ? geminiModel
                 : DEFAULT_GEMINI_MODEL;
             setTempModel(valid as GeminiModelId);
+            
+            const validImage = POLLINATIONS_IMAGE_MODELS.some((m) => m.id === pollinationsImageModel)
+                ? pollinationsImageModel
+                : DEFAULT_POLLINATIONS_IMAGE_MODEL;
+            setTempImageModel(validImage as PollinationsImageModelId);
         }
-    }, [isOpen, geminiKey, convertKey, geminiModel]);
+    }, [isOpen, geminiKey, convertKey, pollinationsKey, geminiModel, pollinationsImageModel]);
 
     const handleSave = () => {
         setGeminiKey(tempGemini);
         setConvertKey(tempConvert);
+        setPollinationsKey(tempPollinations);
         setGeminiModel(tempModel);
+        setPollinationsImageModel(tempImageModel);
         setIsOpen(false);
         toast.success("Settings saved successfully.");
     };
@@ -100,7 +124,52 @@ export default function SettingsModal() {
                             </SelectContent>
                         </Select>
                         <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                            Applied globally across all AI-powered tools. Stored locally.
+                            Applied globally across all AI text tools. Stored locally.
+                        </p>
+                    </div>
+
+                    {/* ── Pollinations Image Model Selection ── */}
+                    <div className="flex flex-col space-y-2">
+                        <Label htmlFor="pollinationsImageModel" className="flex items-center space-x-2">
+                            <Bot className="w-4 h-4" />
+                            <span>Pollinations Image Model</span>
+                        </Label>
+                        <Select
+                            value={tempImageModel}
+                            onValueChange={(val) => setTempImageModel(val as PollinationsImageModelId)}
+                        >
+                            <SelectTrigger id="pollinationsImageModel" className="w-full">
+                                <SelectValue placeholder="Select an image model..." />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {POLLINATIONS_IMAGE_MODELS.map((m) => (
+                                    <SelectItem key={m.id} value={m.id}>
+                                        {m.label}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                            Applied globally across all AI image generation tools. Stored locally.
+                        </p>
+                    </div>
+
+                    {/* ── Pollinations API Key ── */}
+                    <div className="flex flex-col space-y-2">
+                        <Label htmlFor="pollinationsKey" className="flex items-center space-x-2">
+                            <Key className="w-4 h-4" />
+                            <span>Pollinations API Key</span>
+                        </Label>
+                        <Input
+                            id="pollinationsKey"
+                            type="password"
+                            placeholder="sk_..."
+                            value={tempPollinations}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTempPollinations(e.target.value)}
+                            className="col-span-3 font-mono text-sm"
+                        />
+                        <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                            Required for image generation. Stored locally.
                         </p>
                     </div>
 

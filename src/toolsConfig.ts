@@ -1,9 +1,10 @@
-import { FileText, Bot, FileJson2, Map, NotebookPen } from "lucide-react";
+import { FileText, Bot, FileJson2, Map, NotebookPen, ChefHat } from "lucide-react";
 import MarkdownConverter from "@/pages/tools/MarkdownConverter";
 import PromptGenerator from "@/pages/tools/PromptGenerator";
 import PdfPipeline from "@/pages/tools/PdfPipeline";
 import GeoJsonViewer from "@/pages/tools/GeoJsonViewer";
 import ScribeToVault from "@/pages/tools/ScribeToVault";
+import FlavourForge from "@/pages/tools/FlavourForge";
 
 /**
  * @file toolsConfig.ts
@@ -24,7 +25,7 @@ import ScribeToVault from "@/pages/tools/ScribeToVault";
  *
  * Step 2 — Create an AI hook  (if the tool uses AI)
  *   Create `src/hooks/useYourTool.ts`. Import prompts from Step 1 and
- *   `createGeminiModel` from `@/lib/gemini`. Put all AI calls, useState,
+ *   `createGeminiModel` from `@/lib/models`. Put all AI calls, useState,
  *   and localStorage logic here. See `usePromptGenerator.ts` for a template.
  *   The hook exposes a clean API: `{ state, generate, refine, ... }`.
  *
@@ -158,6 +159,16 @@ export const toolsConfig: ToolConfig[] = [
         component: ScribeToVault,
         description: "Upload a scanned PDF of handwritten notes. AI splits them into topic-wise Markdown files for your Obsidian vault.",
         tags: ["ai", "notes", "pdf"],
+        requiresGemini: true,
+    },
+    {
+        id: "flavour-forge",
+        name: "Flavour Forge",
+        path: "/tools/flavour-forge",
+        icon: ChefHat,
+        component: FlavourForge,
+        description: "A multi-pass AI recipe generator that adapts to your kitchen constraints. Uses Gemini for culinary rationale and Pollinations AI for dish visualization.",
+        tags: ["ai", "food", "recipe"],
         requiresGemini: true,
     },
 ];

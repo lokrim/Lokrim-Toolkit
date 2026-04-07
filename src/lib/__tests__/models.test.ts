@@ -1,5 +1,5 @@
 /**
- * @file gemini.test.ts
+ * @file models.test.ts
  * @description Unit tests for the shared Gemini utility functions.
  *
  * Tests cover:
@@ -11,7 +11,7 @@
  */
 
 import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
-import { getActiveGeminiModel, getActiveApiKey, DEFAULT_GEMINI_MODEL } from "../gemini";
+import { getActiveGeminiModel, getActiveApiKey, DEFAULT_GEMINI_MODEL } from "../models";
 import { STORAGE_KEYS } from "../storage";
 
 // ---------------------------------------------------------------------------

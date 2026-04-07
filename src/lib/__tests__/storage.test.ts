@@ -17,22 +17,31 @@ import { STORAGE_KEYS } from "../storage";
 describe("STORAGE_KEYS registry", () => {
     it("matches the expected schema snapshot", () => {
         expect(STORAGE_KEYS).toMatchInlineSnapshot(`
-      {
-        "convert": {
-          "apiKey": "lokrim_convert_key",
-        },
-        "gemini": {
-          "apiKey": "lokrim_gemini_key",
-          "model": "lokrim_gemini_model",
-        },
-        "markdownConverter": {
-          "history": "lokrim_markdown_history",
-        },
-        "promptGenerator": {
-          "history": "lokrim_prompt_history",
-        },
-      }
-    `);
+          {
+            "convert": {
+              "apiKey": "lokrim_convert_key",
+            },
+            "flavourForge": {
+              "defaults": "lokrim_flavour_forge_defaults",
+              "history": "lokrim_flavour_forge_history",
+            },
+            "gemini": {
+              "apiKey": "lokrim_gemini_key",
+              "imageModel": "lokrim_gemini_image_model",
+              "model": "lokrim_gemini_model",
+            },
+            "markdownConverter": {
+              "history": "lokrim_markdown_history",
+            },
+            "pollinations": {
+              "apiKey": "lokrim_pollinations_key",
+              "imageModel": "lokrim_pollinations_image_model",
+            },
+            "promptGenerator": {
+              "history": "lokrim_prompt_history",
+            },
+          }
+        `);
     });
 
     it("has no duplicate key values across domains", () => {
