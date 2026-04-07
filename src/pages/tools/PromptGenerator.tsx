@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useSessionStorage } from "@/hooks/useSessionStorage";
+import { STORAGE_KEYS } from "@/lib/storage";
 import {
     Copy, Loader2, FileCheck2, Bot, History,
     Download, WandSparkles, Trash2, X, Clock,
@@ -39,12 +41,24 @@ function formatTimestamp(ts: number): string {
  * state and dispatching actions back to the hook.
  */
 export default function PromptGenerator() {
-    // Local UI state — belongs in the component, not the hook
-    const [persona, setPersona] = useState("");
-    const [domain, setDomain] = useState("");
-    const [targetLLM, setTargetLLM] = useState("");
-    const [promptType, setPromptType] = useState("");
-    const [roughIdea, setRoughIdea] = useState("");
+    const [formParams, setFormParams] = useSessionStorage(STORAGE_KEYS.session.promptGenerator.formParams, {
+        persona: "",
+        domain: "",
+        targetLLM: "",
+        promptType: "",
+        roughIdea: ""
+    });
+    
+    // We can destructure for rendering
+    const { persona, domain, targetLLM, promptType, roughIdea } = formParams;
+    
+    // Helper setters
+    const setPersona = (val: string) => setFormParams(p => ({ ...p, persona: val }));
+    const setDomain = (val: string) => setFormParams(p => ({ ...p, domain: val }));
+    const setTargetLLM = (val: string) => setFormParams(p => ({ ...p, targetLLM: val }));
+    const setPromptType = (val: string) => setFormParams(p => ({ ...p, promptType: val }));
+    const setRoughIdea = (val: string) => setFormParams(p => ({ ...p, roughIdea: val }));
+
     const [showHistory, setShowHistory] = useState(false);
 
     const {

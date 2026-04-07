@@ -70,7 +70,7 @@ A multi-pass AI pipeline that turns scanned handwritten PDFs into a single, clea
 A sophisticated, multi-pass recipe generator that turns your pantry into gourmet meals tailored precisely to your kitchen constraints.
 
 - **Kitchen Profile Persistence**: Your heat sources (e.g. Stove, Air Fryer), utensils, and global cuisine preferences are cached automatically, making subsequent visits frictionless.
-- **Pass 1 — Culinary Scouting**: Generates a grid of 3-4 mouthwatering dish concepts specifically adapting to your available ingredients and effort-limits. Each concept displays estimated calories and a visual "Ingredient Match %" so you know exactly what requires a grocery run.
+- **Pass 1 — Culinary Scouting**: Generates a grid of 10 mouthwatering dish concepts specifically adapting to your available ingredients and effort-limits. Each concept displays estimated calories and a visual "Ingredient Match %" so you know exactly what requires a grocery run.
 - **Pass 2 — Detailed Forging**: Expanding a concept triggers the second AI pass.
   - Generates an on-the-fly, stylized representation of the final dish using Pollinations.ai, embedded at the top of the recipe.
   - Dynamically extracts macro-nutrient targets mapped into an elegant, custom-coloured ratio bar (Protein, Carbs, Fat) alongside an exact calorie tally.
@@ -113,7 +113,7 @@ src/
   App.tsx                    — Top-level router (auto-generates routes from toolsConfig)
   toolsConfig.ts             — Single source of truth for all tool registrations
   lib/
-    gemini.ts                — Shared AI factory: model registry, BYOK key resolution, createGeminiModel()
+    models.ts                — Shared AI factory: model registry (Gemini/Pollinations), BYOK key resolution, createGeminiModel()
     storage.ts               — Central localStorage schema: all key names live here
     pdfPipelineUtils.ts      — PDF merge/convert logic (shared lib for the PDF Pipeline tool)
     prompts/
@@ -121,7 +121,8 @@ src/
       scribeToVault.ts       — System prompts for the Scribe to Vault pipeline
       markdownConverter.ts   — System prompt for the Web to Obsidian tool
   hooks/
-    useLocalStorage.ts       — Typed localStorage hook with cross-tab sync
+    useLocalStorage.ts       — Typed localStorage hook with cross-tab sync 
+    useSessionStorage.ts     — Tool session state caching (immune to tab switching)
     usePromptGenerator.ts    — AI logic + history for the Prompt Generator tool
     useScribeToVault.ts      — Multi-pass AI pipeline for the Scribe to Vault tool
   pages/
@@ -142,7 +143,7 @@ src/
 
 Only infrastructure that is genuinely shared across multiple tools belongs in `src/lib/`. The rule is: **if it is only used by one tool, it lives in that tool's files.**
 
-#### `src/lib/gemini.ts`
+#### `src/lib/models.ts`
 
 Three responsibilities only:
 1. **Model Registry** (`GEMINI_MODELS`, `DEFAULT_GEMINI_MODEL`, `GEMINI_IMAGE_MODELS` etc) — add new models here to make them appear in the Settings modal.
@@ -199,51 +200,23 @@ Key rules for prompt files:
 
 **Step 2 — Create an AI hook** *(AI tools only)*
 
-Create `src/hooks/useYourTool.ts`. Import your prompts from Step 1 and `createGeminiModel` (or `createGeminiImageClient` from `@google/genai` if generating images) from `@/lib/gemini`. All async AI calls, `useState`, and `localStorage` reads/writes go here.
+Create `src/hooks/useYourTool.ts`. Import your prompts from Step 1 and `createGeminiModel` (or `createGeminiImageClient` from `@google/genai` if generating images) from `@/lib/gemini`. If the tool makes AI calls or requires local storage persistence, keep the React View entirely separate from the logic.
 
-```ts
-// src/hooks/useYourTool.ts
-
-import { useState } from "react";
-import { toast } from "sonner";
-import { createGeminiModel, createGeminiImageClient, getActiveGeminiImageModel } from "@/lib/gemini";
+```typescript
+// src/hooks/useMyNewTool.ts
+import { useSessionStorage } from "@/hooks/useSessionStorage";
 import { STORAGE_KEYS } from "@/lib/storage";
-import { MY_SYSTEM_PROMPT, buildInput } from "@/lib/prompts/yourTool";
 
-export function useYourTool() {
-    const [output, setOutput] = useState("");
-    const [isLoading, setIsLoading] = useState(false);
+export function useMyNewTool() {
+    // 1. Maintain context across tab switching securely!
+    const [activePrompt, setActivePrompt] = useSessionStorage<string>(
+        STORAGE_KEYS.session.myNewTool.prompt, ""
+    );
 
-    async function generate(userText: string) {
-        setIsLoading(true);
-        try {
-            const model = createGeminiModel({
-                systemInstruction: MY_SYSTEM_PROMPT,
-                generationConfig: { temperature: 0.7 },
-            });
-            const result = await model.generateContent(buildInput(userText));
-            setOutput(result.response.text());
-            
-            // Example of Image Generation
-            // const ai = createGeminiImageClient();
-            // const imgResult = await ai.models.generateImages({
-            //     model: getActiveGeminiImageModel(),
-            //     prompt: "Robot holding a red skateboard",
-            //     config: { numberOfImages: 1 }
-            // });
-            // const imageBase64 = imgResult.generatedImages[0].image.imageBytes;
+    // 2. Wrap AI logic
+    async function generate() { /* ... */ }
 
-            toast.success("Done!");
-        } catch (err: unknown) {
-            // getActiveApiKey() throws a user-friendly Error if no key is configured.
-            // That message surfaces here via toast (crash-at-the-boundary pattern).
-            toast.error(err instanceof Error ? err.message : "Something went wrong.");
-        } finally {
-            setIsLoading(false);
-        }
-    }
-
-    return { output, isLoading, generate };
+    return { activePrompt, setActivePrompt, generate };
 }
 ```
 

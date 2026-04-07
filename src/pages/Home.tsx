@@ -56,6 +56,13 @@ export default function Home() {
                                 Upload a scanned PDF of handwritten notes. A multi-pass AI pipeline runs verbatim OCR (chunked at 8 pages for large documents), converts the raw transcript into structured GitHub-Flavored Markdown, and offers repeatable Polish and Expand passes — polishing structure and enriching content with definitions, worked examples, and real-world context without altering originals. Edit, rename, and download the result as a single <code>.md</code> file.
                             </p>
                         </div>
+                        
+                        <div className="space-y-1">
+                            <strong className="text-zinc-900 dark:text-zinc-100 text-sm">Flavour Forge</strong>
+                            <p className="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed">
+                                A high-performance recipe generator mapping your exact kitchen layout to gourmet realities. Uses Gemini to logic-check and map ingredient crossovers into detailed macros, while asynchronously blasting out high-grade cinematic visual renders via Pollinations AI natively. Caches your unique kitchen equipment permanently while keeping your session output completely immune to accidental tab switches using session-local recovery.
+                            </p>
+                        </div>
                     </div>
                 </div>
 
@@ -95,16 +102,16 @@ export default function Home() {
                         </div>
 
                         <div className="space-y-1">
-                            <strong className="text-zinc-900 dark:text-zinc-100 text-sm">Privacy</strong>
+                            <strong className="text-zinc-900 dark:text-zinc-100 text-sm">Privacy & Session State</strong>
                             <p className="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed">
-                                No user accounts, no server-side storage, no telemetry. Every key and piece of history lives exclusively in your browser's local storage.
+                                No user accounts, no server-side storage, no telemetry. Every key and historical recipe lives exclusively in your browser's local storage. Crucially, your active runtime inputs (like an unsaved generated prompt or mid-generation recipe) are securely cached via <code>useSessionStorage</code>. Switching between tools retains your state flawlessly, but automatically vanishes exactly when the browser tab closes.
                             </p>
                         </div>
 
                         <div className="space-y-1 pt-1 border-t border-zinc-100 dark:border-zinc-800">
                             <strong className="text-zinc-900 dark:text-zinc-100 text-sm">Contributing a Tool</strong>
                             <p className="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed">
-                                New tools follow a 5-step pattern: create prompt constants → build an AI hook → build the view component → register in <code className="text-xs font-mono bg-zinc-100 dark:bg-zinc-800 px-1 py-0.5 rounded">toolsConfig.ts</code> → update the README. See the <strong className="text-zinc-800 dark:text-zinc-200">Developer Guide</strong> in the README for the full workflow with code templates.
+                                New tools follow a strict functional pattern: create prompt constants → build an AI hook leveraging <code>useSessionStorage</code> for active state retention → build the view component → register in <code className="text-xs font-mono bg-zinc-100 dark:bg-zinc-800 px-1 py-0.5 rounded">toolsConfig.ts</code>. See the <strong className="text-zinc-800 dark:text-zinc-200">Developer Guide</strong> in the README for the full workflow with code templates.
                             </p>
                         </div>
                     </div>

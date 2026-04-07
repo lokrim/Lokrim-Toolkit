@@ -62,4 +62,19 @@ export const STORAGE_KEYS = {
         apiKey: "lokrim_pollinations_key",
         imageModel: "lokrim_pollinations_image_model",
     },
+    /** Session-local context caching keys. */
+    session: {
+        flavourForge: {
+            concepts: "lokrim_session_ff_concepts",
+            expanded: "lokrim_session_ff_expanded"
+        },
+        markdownConverter: {
+            inputUrl: "lokrim_session_mc_input",
+            markdownOutput: "lokrim_session_mc_output"
+        },
+        promptGenerator: {
+            formParams: "lokrim_session_pg_params",
+            resultMarkdown: "lokrim_session_pg_result"
+        }
+    }
 } as const;

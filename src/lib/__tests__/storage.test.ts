@@ -40,6 +40,20 @@ describe("STORAGE_KEYS registry", () => {
             "promptGenerator": {
               "history": "lokrim_prompt_history",
             },
+            "session": {
+              "flavourForge": {
+                "concepts": "lokrim_session_ff_concepts",
+                "expanded": "lokrim_session_ff_expanded",
+              },
+              "markdownConverter": {
+                "inputUrl": "lokrim_session_mc_input",
+                "markdownOutput": "lokrim_session_mc_output",
+              },
+              "promptGenerator": {
+                "formParams": "lokrim_session_pg_params",
+                "resultMarkdown": "lokrim_session_pg_result",
+              },
+            },
           }
         `);
     });

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useSessionStorage } from "@/hooks/useSessionStorage";
 import { toast } from "sonner";
 import { createGeminiModel, getActivePollinationsApiKey, getActivePollinationsImageModel } from "@/lib/models";
 
@@ -64,8 +65,14 @@ export function useFlavourForge() {
     );
 
     // Runtime state (Append-Only Feed Model)
-    const [concepts, setConcepts] = useState<DishConcept[]>([]);
-    const [detailedRecipes, setDetailedRecipes] = useState<DetailedRecipeData[]>([]);
+    const [concepts, setConcepts] = useSessionStorage<DishConcept[]>(
+        STORAGE_KEYS.session.flavourForge.concepts,
+        []
+    );
+    const [detailedRecipes, setDetailedRecipes] = useSessionStorage<DetailedRecipeData[]>(
+        STORAGE_KEYS.session.flavourForge.expanded,
+        []
+    );
     const [isGeneratingConcepts, setIsGeneratingConcepts] = useState<boolean>(false);
     const [ingredientInput, setIngredientInput] = useState<string>("");
 
@@ -127,48 +134,54 @@ export function useFlavourForge() {
                 generationConfig: { temperature: 0.6 },
             });
             const input = buildDetailedInput(concept.title, concept.cuisine, params);
-            const result = await model.generateContent(input);
-            const rawMarkdown = result.response.text();
             
-            let finalImageRender = null;
-            // 1. Extract Images
-            const imagePromptMatch = rawMarkdown.match(/<ImagePrompt>\s*(.*?)\s*<\/ImagePrompt>/is);
-            const imgPrompt = imagePromptMatch ? imagePromptMatch[1].trim() : `${concept.title} professional food photography`;
+            // ── Parallel Execution ──
+            const imgPrompt = `A high quality, hyper-realistic professional culinary photography shot of ${concept.title}. ${concept.cuisine} cuisine style, beautiful cinematic plating, rich atmospheric lighting, 8k resolution, food photography.`;
             
-            try {
-                const apiKey = getActivePollinationsApiKey();
-                const imageModelName = getActivePollinationsImageModel();
-                
-                const response = await fetch(`https://gen.pollinations.ai/v1/images/generations`, {
-                    method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${apiKey}`
-                    },
-                    body: JSON.stringify({
-                        prompt: imgPrompt,
-                        model: imageModelName,
-                        size: "1024x1024",
-                        response_format: "b64_json"
-                    })
-                });
+            const fetchImagePromise = (async () => {
+                try {
+                    const apiKey = getActivePollinationsApiKey();
+                    const imageModelName = getActivePollinationsImageModel();
+                    
+                    const response = await fetch(`https://gen.pollinations.ai/v1/images/generations`, {
+                        method: 'POST',
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${apiKey}`
+                        },
+                        body: JSON.stringify({
+                            prompt: imgPrompt,
+                            model: imageModelName,
+                            size: "1024x1024",
+                            response_format: "b64_json"
+                        })
+                    });
 
-                if (!response.ok) {
-                    const errText = await response.text();
-                    throw new Error(`API Error ${response.status}: ${errText}`);
-                }
-
-                const data = await response.json();
-                if (data.data && data.data.length > 0) {
-                    const imgB64 = data.data[0].b64_json;
-                    if (imgB64) {
-                        finalImageRender = `data:image/jpeg;base64,${imgB64}`;
+                    if (!response.ok) {
+                        const errText = await response.text();
+                        throw new Error(`API Error ${response.status}: ${errText}`);
                     }
+
+                    const data = await response.json();
+                    if (data.data && data.data.length > 0) {
+                        const imgB64 = data.data[0].b64_json;
+                        return imgB64 ? `data:image/jpeg;base64,${imgB64}` : null;
+                    }
+                } catch (imgError: unknown) {
+                    console.error("Failed to generate image:", imgError);
+                    toast.error(`Image generation failed: ${imgError instanceof Error ? imgError.message : String(imgError)}`);
+                    return null;
                 }
-            } catch (imgError: unknown) {
-                console.error("Failed to generate image:", imgError);
-                toast.error(`Image generation failed: ${imgError instanceof Error ? imgError.message : String(imgError)}`);
-            }
+                return null;
+            })();
+
+            const generateTextPromise = model.generateContent(input).then(res => res.response.text());
+
+            // Await both simultaneously
+            const [finalImageRender, rawMarkdown] = await Promise.all([
+                fetchImagePromise,
+                generateTextPromise
+            ]);
 
             // 2. Extract Macros
             const macrosMatch = rawMarkdown.match(/<Macros>\s*(.*?)\s*<\/Macros>/is);

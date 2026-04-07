@@ -11,7 +11,7 @@ import { useTheme } from "@/components/ThemeProvider";
  * ONLY use Tailwind's raw `.dark` variants (e.g., `dark:bg-zinc-900`) directly on elements.
  * This guarantees that as the UI expands, the components natively subscribe to this toggle.
  */
-export function ThemeToggle() {
+export function ThemeToggle({ isCollapsed }: { isCollapsed?: boolean }) {
     const { theme, setTheme } = useTheme();
 
     const toggleTheme = () => {
@@ -25,17 +25,17 @@ export function ThemeToggle() {
     return (
         <button
             onClick={toggleTheme}
-            className="flex items-center space-x-3 w-full px-2.5 py-2 rounded-md text-sm transition-colors text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-100"
+            className={`flex items-center rounded-md text-sm transition-colors text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-100 ${isCollapsed ? 'justify-center p-2 w-full' : 'space-x-3 w-full px-2.5 py-2'}`}
         >
             {theme === "dark" ? (
                 <>
-                    <Sun className="w-4 h-4 opacity-70" />
-                    <span>Light Mode</span>
+                    <Sun className="w-4 h-4 opacity-70 shrink-0" />
+                    {!isCollapsed && <span className="truncate">Light Mode</span>}
                 </>
             ) : (
                 <>
-                    <Moon className="w-4 h-4 opacity-70" />
-                    <span>Dark Mode</span>
+                    <Moon className="w-4 h-4 opacity-70 shrink-0" />
+                    {!isCollapsed && <span className="truncate">Dark Mode</span>}
                 </>
             )}
         </button>

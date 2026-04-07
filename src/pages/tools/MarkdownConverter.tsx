@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
+import { useSessionStorage } from "@/hooks/useSessionStorage";
 import { STORAGE_KEYS } from "@/lib/storage";
 import { MARKDOWN_CONVERSION_PROMPT } from "@/lib/prompts/markdownConverter";
 import TurndownService from "turndown";
@@ -37,8 +38,8 @@ interface HistoryItem {
  * in the right-hand sidebar, avoiding database dependencies.
  */
 export default function MarkdownConverter() {
-    const [inputText, setInputText] = useState("");
-    const [outputText, setOutputText] = useState("");
+    const [inputText, setInputText] = useSessionStorage<string>(STORAGE_KEYS.session.markdownConverter.inputUrl, "");
+    const [outputText, setOutputText] = useSessionStorage<string>(STORAGE_KEYS.session.markdownConverter.markdownOutput, "");
     const [isConverting, setIsConverting] = useState(false);
     const [isCopied, setIsCopied] = useState(false);
     const [history, setHistory] = useLocalStorage<HistoryItem[]>(STORAGE_KEYS.markdownConverter.history, []);

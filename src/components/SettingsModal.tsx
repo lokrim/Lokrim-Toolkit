@@ -26,7 +26,7 @@ import {
 } from "@/lib/models";
 import { STORAGE_KEYS } from "@/lib/storage";
 
-export default function SettingsModal() {
+export default function SettingsModal({ isCollapsed }: { isCollapsed?: boolean }) {
     const [geminiKey, setGeminiKey] = useLocalStorage<string>(STORAGE_KEYS.gemini.apiKey, "");
     const [convertKey, setConvertKey] = useLocalStorage<string>(STORAGE_KEYS.convert.apiKey, "");
     const [geminiModel, setGeminiModel] = useLocalStorage<GeminiModelId>(
@@ -88,9 +88,12 @@ export default function SettingsModal() {
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
-                <button className="flex items-center space-x-3 w-full px-2.5 py-2 rounded-md text-sm transition-colors text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-100">
-                    <Settings className="w-4 h-4 opacity-70" />
-                    <span>Settings</span>
+                <button
+                    onClick={() => setIsOpen(true)}
+                    className={`flex items-center rounded-md text-sm transition-colors text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-100 ${isCollapsed ? 'justify-center w-full p-2' : 'w-full space-x-3 px-2.5 py-2'}`}
+                >
+                    <Settings className="w-4 h-4 opacity-70 shrink-0" />
+                    {!isCollapsed && <span className="truncate">Settings</span>}
                 </button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[450px]">

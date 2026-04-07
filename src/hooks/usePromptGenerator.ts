@@ -11,6 +11,7 @@
  */
 
 import { useState, useEffect } from "react";
+import { useSessionStorage } from "@/hooks/useSessionStorage";
 import { toast } from "sonner";
 import { createGeminiModel } from "@/lib/models";
 import { STORAGE_KEYS } from "@/lib/storage";
@@ -79,7 +80,7 @@ function saveHistory(entries: HistoryEntry[]): void {
 // ---------------------------------------------------------------------------
 
 export function usePromptGenerator() {
-    const [outputPrompt, setOutputPrompt] = useState("");
+    const [outputPrompt, setOutputPrompt] = useSessionStorage<string>(STORAGE_KEYS.session.promptGenerator.resultMarkdown, "");
     const [refineFeedback, setRefineFeedback] = useState("");
     const [isGenerating, setIsGenerating] = useState(false);
     const [isRefining, setIsRefining] = useState(false);
